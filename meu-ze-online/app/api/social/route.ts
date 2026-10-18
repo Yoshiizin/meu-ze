@@ -35,7 +35,7 @@ export async function GET(req:Request) {
     if(!await isMember(ctx.db,ctx.userId))return send('Insira seu código de convite.',403,{needsInvite:true});
     const [profiles,posts,likes,comments]=await Promise.all([
       ctx.db.from('profiles').select('id,name,bio,theme').limit(300),
-      ctx.db.from('posts').select('id,author,body,title,emoji,scene,image,created').order('created',{ascending:false}).limit(500),
+      ctx.db.from('posts').select('id,author,body,title,emoji,scene,image,media,created').order('created',{ascending:false}).limit(500),
       ctx.db.from('likes').select('post,user').limit(5000),
       ctx.db.from('comments').select('id,post,author,body,created').order('created',{ascending:false}).limit(5000)
     ]);
@@ -57,7 +57,7 @@ function sanitizeTheme(v:unknown){
     font:['serif','sans','mono'].includes(String(x.font))?x.font:'serif',
     pattern:['plain','grid','dots'].includes(String(x.pattern))?x.pattern:'plain',
     radius:Number.isFinite(x.radius)?Math.max(0,Math.min(36,Math.round(Number(x.radius)))):0,
-    avatar:image(x.avatar,800000),cover:image(x.cover,1400000),sticker:str(x.sticker,12),
+    avatar:image(x.avatar,800000),cover:image(x.cover,1400000),wallpaper:image(x.wallpaper,1000),sticker:str(x.sticker,12),
     song:/^https:\/\/[^\s<>"]+$/.test(song)?song:'',songName:str(x.songName,100),
     favorites:str(x.favorites,500),layout:['list','grid'].includes(String(x.layout))?x.layout:'list',pinned:pinList
   };
@@ -87,7 +87,8 @@ export async function POST(req:Request){
       const image=str(x.image,1200000);
       if(image&&!/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(image))return send('Imagem inválida.',400);
       const scene=['geral','musica','cinema','aleatorio'].includes(String(x.scene))?x.scene:'geral';
-      const {error}=await db.from('posts').insert({id:crypto.randomUUID(),author:userId,body,title:str(x.title,100),emoji:str(x.emoji,12)||'✦',scene,image,created:Date.now()});
+      const media=Array.isArray(x.media)?x.media.slice(0,30).filter((m:unknown)=>{if(!m||typeof m!=='object')return false;const v=m as Record<string,unknown>;return (v.type==='image'||v.type==='video')&&typeof v.url==='string'&&v.url.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/meuze-media/${userId}/`)&&v.url.length<1000}):[];
+      const {error}=await db.from('posts').insert({id:crypto.randomUUID(),author:userId,body,media,title:str(x.title,100),emoji:str(x.emoji,12)||'✦',scene,image,created:Date.now()});
       if(error)throw error;
     }else if(x.action==='like'){
       const id=str(x.id,80);
