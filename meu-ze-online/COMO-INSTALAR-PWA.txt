@@ -1,0 +1,10 @@
+Meu Zé - Ícone retrô do dinossauro
+
+Este ZIP é CÓDIGO-FONTE Next.js, não uma pasta pronta para arrastar ao Netlify.
+Para atualizar o site existente, publique este projeto via repositório Git ou outra forma compatível com build Next.js.
+Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY no Netlify.
+Depois do deploy, abra https://meuze.netlify.app/manifest.webmanifest para verificar o manifesto.
+No Android, Chrome > menu de três pontos > Instalar app ou Adicionar à tela inicial.
+Se o ícone antigo persistir, remova o atalho e instale novamente.
+
+Obs: Este pacote acrescenta ícone e manifesto; não corrige erros de Invalid origin ou de publicação.

@@ -1,0 +1,9 @@
+-- Roteiro manual de segurança (não executar como SQL):
+-- 1. Abrir janela anônima sem login: o feed não deve aparecer.
+-- 2. Registrar usuário A SEM convite: login funciona, mas mostra convite;
+--    tentativas de ler profiles/posts via Data API retornam listas vazias.
+-- 3. Entrar com convite no usuário A: feed disponível.
+-- 4. Registrar usuário B e entrar com o mesmo convite: ambos veem os posts.
+-- 5. Usuário B tenta apagar publicação do usuário A: RLS deve negar.
+-- 6. Usuário B tenta alterar profile do A: RLS deve negar.
+-- 7. Revogar código: novas contas não devem ser aceitas; antigas seguem no grupo.
