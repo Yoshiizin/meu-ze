@@ -3,10 +3,16 @@
 O Android usa um aplicativo nativo WebView que abre https://meu-ze.vercel.app/ em tela cheia. O iPhone continua usando a versão web instalável pelo Safari (PWA). Ambos usam as mesmas contas, chats, feed e Supabase.
 
 ## Baixar APK Android
-1. No GitHub do projeto, entre em **Actions > Meu Zé Android APK**.
-2. Abra a execução concluída e, em **Artifacts**, baixe **Meu-Ze-Android-APK**.
-3. Extraia o ZIP e instale **app-debug.apk** no Android 10 ou superior.
-4. Pode ser necessário autorizar a instalação de apps desta fonte.
+
+**[⬇️ Baixar Meu-Ze.apk diretamente pelo GitHub](https://github.com/Yoshiizin/meu-ze/releases/latest/download/Meu-Ze.apk)**
+
+Ou acesse a **[página de downloads (Releases)](https://github.com/Yoshiizin/meu-ze/releases)** e escolha `Meu-Ze.apk` em **Assets**. O repositório é privado, então é necessário estar conectado ao GitHub com permissão de acesso.
+
+1. No Android, baixe o arquivo `.apk` pelo link acima.
+2. Abra o APK e, se o Android solicitar, permita a instalação dessa fonte.
+3. Abra o Meu Zé pelo ícone do dinossaurinho.
+
+Se o link da versão mais recente ainda não estiver disponível, a compilação pode ser encontrada em **[Actions > Meu Zé Android APK](https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml)**, na seção **Artifacts**. Lá o APK vem dentro de um ZIP.
 
 É um APK de teste assinado com chave de debug gerada pelo runner. Para atualizar com outro build, pode ser necessário desinstalar a versão anterior. Desinstalar apaga apenas dados locais do app, não a conta ou mensagens no Supabase. Para distribuir atualizações estáveis, crie e guarde uma chave de assinatura de release privada; não a comite no GitHub.
 
