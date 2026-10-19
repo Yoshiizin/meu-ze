@@ -127,3 +127,11 @@
  .zechat-send{flex-basis:34px}
  .zechatbubblemedia{max-width:92%}
 }
+
+/* Optional retro-horror notification cues; controls keep the chat's existing theme. */
+.zechatroomactions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.zechatsoundtoggle{border:1px solid color-mix(in srgb,var(--chat-accent) 55%,transparent);color:var(--chat-accent);background:color-mix(in srgb,var(--chat-accent) 6%,var(--chat-bg));display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;font:700 10px Arial,sans-serif;white-space:nowrap}
+.zechatsoundtoggle[aria-pressed="false"]{opacity:.65}
+.zechatsoundtoggle:hover{background:color-mix(in srgb,var(--chat-accent) 14%,var(--chat-bg))}
+@media(max-width:720px){.zechatsoundtoggle span{display:none}}
+@media(max-width:380px){.zechatroomactions{gap:4px}.zechatsoundtoggle,.zechatsettings{padding:7px}}
