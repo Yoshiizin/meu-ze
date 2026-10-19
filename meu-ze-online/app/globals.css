@@ -104,3 +104,9 @@
 @keyframes ze-feed-refresh-spin{to{transform:rotate(360deg)}}
 @media(min-width:651px){.ze-feed-pull{top:92px}}
 @media(prefers-reduced-motion:reduce){.ze-feed-pull-loading svg{animation:none}}
+
+/* Clickable links in posts, comments and messages. */
+.ze-external-link{color:var(--chat-accent,#1700b7);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere;word-break:break-word;cursor:pointer}
+.ze-external-link:hover{text-decoration-thickness:2px}
+.ze-external-link:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.posttext .ze-external-link,.replies .ze-external-link{color:inherit;text-decoration:underline;text-decoration-color:currentColor}

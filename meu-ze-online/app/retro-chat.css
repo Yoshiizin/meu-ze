@@ -137,3 +137,5 @@
 @media(max-width:380px){.zechatroomactions{gap:4px}.zechatsoundtoggle,.zechatsettings{padding:7px}}
 
 .zechatroom{position:relative}
+
+.zechatbubble .ze-external-link{color:inherit;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2px;overflow-wrap:anywhere}

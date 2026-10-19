@@ -6,6 +6,7 @@ import {unlockChatAudio} from './chat-sounds';
 import {readNotificationPreferences,saveNotificationPreferences,playSentSound,type NotificationPreferences} from './chat-notifications';
 import ChatSoundSettings from './chat-sound-settings';
 import {encodeChatAttachment,parseChatAttachment,uploadChatFile, type ChatAttachment} from './chat-media';
+import LinkifiedText from './linkified-text';
 
 type Profile = {id:string;name:string;bio:string;theme:string};
 type Message = {id:string;sender:string;recipient:string|null;body:string;created_at:string};
@@ -175,7 +176,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
             return <div key={m.id} className={'zechatbubble '+(m.sender===me?'mine':'received')+(attachment?' zechatbubblemedia':'')}>
 
               <div className="zechatbubblehead"><button type="button" className="zechatprofilelink" onClick={()=>openProfile(m.sender)} title={'Visitar perfil de '+(author?.name||'Zé')} aria-label={'Visitar perfil de '+(author?.name||'Zé')}>{avatar(author)}</button><button type="button" className="zechatnamelink" onClick={()=>openProfile(m.sender)}>{m.sender===me?'Você':author?.name||'Zé'}</button></div>
-              {attachment?<div className="zechatattachment">{attachment.type==='video'?<video src={attachment.url} controls playsInline preload="metadata"/>:<a href={attachment.url} target="_blank" rel="noopener noreferrer" title="Abrir imagem"><img src={attachment.url} alt={attachment.type==='sticker'?'Figurinha de meme':'Foto enviada no chat'} loading="lazy" className={attachment.type==='sticker'?'zechatsticker':''}/></a>}{attachment.caption&&<p>{attachment.caption}</p>}{attachment.type==='sticker'&&<button type="button" className="zechatstickerreuse" onClick={()=>setStickerOpen(true)}>✳ Ver figurinhas</button>}</div>:<p>{m.body}</p>}
+              {attachment?<div className="zechatattachment">{attachment.type==='video'?<video src={attachment.url} controls playsInline preload="metadata"/>:<a href={attachment.url} target="_blank" rel="noopener noreferrer" title="Abrir imagem"><img src={attachment.url} alt={attachment.type==='sticker'?'Figurinha de meme':'Foto enviada no chat'} loading="lazy" className={attachment.type==='sticker'?'zechatsticker':''}/></a>}{attachment.caption&&<p><LinkifiedText text={attachment.caption}/></p>}{attachment.type==='sticker'&&<button type="button" className="zechatstickerreuse" onClick={()=>setStickerOpen(true)}>✳ Ver figurinhas</button>}</div>:<p><LinkifiedText text={m.body}/></p>}
               <small>{new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</small>
             </div>;
           })}
