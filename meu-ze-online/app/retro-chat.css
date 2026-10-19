@@ -135,3 +135,5 @@
 .zechatsoundtoggle:hover{background:color-mix(in srgb,var(--chat-accent) 14%,var(--chat-bg))}
 @media(max-width:720px){.zechatsoundtoggle span{display:none}}
 @media(max-width:380px){.zechatroomactions{gap:4px}.zechatsoundtoggle,.zechatsettings{padding:7px}}
+
+.zechatroom{position:relative}
