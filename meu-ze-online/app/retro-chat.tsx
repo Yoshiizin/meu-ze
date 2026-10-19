@@ -12,6 +12,7 @@ type Props = {
   chatText:string; setChatText:(s:string)=>void; sendChat:()=>Promise<void>;
   avatar:(p?:Profile,large?:boolean)=>ReactNode;
   act:(action:Record<string,unknown>)=>Promise<boolean>;
+  openProfile:(id:string)=>void;
   uploadMedia:(file:File,kind:'image'|'video'|'audio')=>Promise<string|null>;
 };
 
@@ -46,7 +47,7 @@ const colorFields:{key:'bg'|'ink'|'accent'|'sent'|'received';label:string}[]=[
   {key:'sent',label:'Minhas mensagens'},{key:'received',label:'Mensagens recebidas'}
 ];
 
-export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,setChatTo,chatText,setChatText,sendChat,avatar,act,uploadMedia}:Props){
+export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,setChatTo,chatText,setChatText,sendChat,avatar,act,uploadMedia,openProfile}:Props){
   const [editing,setEditing]=useState(false);
   const [level,setLevel]=useState(1);
   const [draft,setDraft]=useState<ChatTheme>(original);
@@ -90,15 +91,18 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
           <span className="zechatgeneral"><Users size={18}/></span>
           <span className="zechatpersonname"><strong>Chat geral</strong><small>Toda a galera</small></span>
         </button>
-        {profiles.filter(p=>p.id!==me).map(p=><button type="button" key={p.id} className={chatTo===p.id?'selected':''} aria-current={chatTo===p.id?'page':undefined} onClick={()=>setChatTo(p.id)}>
-          {avatar(p)}<span className="zechatpersonname"><strong>{p.name}</strong><small>Mensagem privada</small></span>
-        </button>)}
+        {profiles.filter(p=>p.id!==me).map(p=><div key={p.id} className={'zechatpersonrow '+(chatTo===p.id?'selected':'')}>
+          <button type="button" className="zechatprofilelink" onClick={()=>openProfile(p.id)} title={'Visitar perfil de '+p.name} aria-label={'Visitar perfil de '+p.name}>{avatar(p)}</button>
+          <button type="button" className="zechatconversationlink" aria-current={chatTo===p.id?'page':undefined} onClick={()=>setChatTo(p.id)}>
+            <span className="zechatpersonname"><strong>{p.name}</strong><small>Mensagem privada</small></span>
+          </button>
+        </div>)}
       </nav>
       <div className="zechatroom">
         <header className="zechatroomhead">
           <div className="zechatroomtitle">
-            {selected?avatar(selected):<span className="zechatgeneral"><Users size={18}/></span>}
-            <span><strong>{selected?.name||'Sala da galera'}</strong><small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> Conversa com todos</>}</small></span>
+            {selected?<button type="button" className="zechatprofilelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name} aria-label={'Visitar perfil de '+selected.name}>{avatar(selected)}</button>:<span className="zechatgeneral"><Users size={18}/></span>}
+            <span>{selected?<button type="button" className="zechatnamelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name}>{selected.name}</button>:<strong>Sala da galera</strong>}<small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> Conversa com todos</>}</small></span>
           </div>
           <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
         </header>
@@ -106,7 +110,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
           {filtered.map(m=>{
             const author=profiles.find(p=>p.id===m.sender);
             return <div key={m.id} className={'zechatbubble '+(m.sender===me?'mine':'received')}>
-              <div className="zechatbubblehead">{avatar(author)}<strong>{m.sender===me?'Você':author?.name||'Zé'}</strong></div>
+              <div className="zechatbubblehead"><button type="button" className="zechatprofilelink" onClick={()=>openProfile(m.sender)} title={'Visitar perfil de '+(author?.name||'Zé')} aria-label={'Visitar perfil de '+(author?.name||'Zé')}>{avatar(author)}</button><button type="button" className="zechatnamelink" onClick={()=>openProfile(m.sender)}>{m.sender===me?'Você':author?.name||'Zé'}</button></div>
               <p>{m.body}</p>
               <small>{new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</small>
             </div>;
