@@ -136,8 +136,56 @@ const shownTheme=modal==='customize'?draft:view==='profile'?parse(owner):parse(m
 const css={'--wallpaper':safeImage(shownTheme.wallpaper||'')?`url("${safeImage(shownTheme.wallpaper||'')}")`:'none','--bg':shownTheme.bg,'--ink':shownTheme.ink,'--accent':shownTheme.accent,'--card':shownTheme.card,'--round':shownTheme.radius+'px',fontFamily:fonts[shownTheme.font]||fonts.sans} as CSSProperties;
 const notify=(s:string)=>setToast(s);
 async function act(x:Record<string,unknown>){if(busy)return false;if(!data.me){notify('Entre com sua conta para salvar.');return false}setBusy(true);try{const {data:{session}}=await getSupabase()!.auth.getSession();if(!session)throw Error('Sessão expirada. Entre novamente.');const r=await fetch('/api/social',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`},body:JSON.stringify(x)});const d=await r.json();if(!r.ok)throw Error(d.error||'Falha ao salvar.');await refresh();return true}catch(e){notify(e instanceof Error?e.message:'Falha ao salvar.');return false}finally{setBusy(false)}}
-async function loadChat(){const sb=getSupabase();if(!sb||!data.me)return;const {data:rows,error}=await sb.from('chat_messages').select('id,sender,recipient,body,created_at').order('created_at',{ascending:false}).limit(300);if(!error){setMessages((rows||[]).reverse());setChatReady(true)}}
-useEffect(()=>{if(!data.me)return;void loadChat();const timer=setInterval(()=>void loadChat(),5000);return()=>clearInterval(timer)},[data.me]);
+async function loadChat(){
+  const sb=getSupabase(),user=data.me;
+  if(!sb||!user||chatLoadBusyRef.current)return;
+  chatLoadBusyRef.current=true;
+  try{
+    const {data:rows,error}=await sb.from('chat_messages').select('id,sender,recipient,body,created_at').order('created_at',{ascending:false}).limit(300);
+    if(error||chatUserRef.current!==user)return;
+    const ordered=(rows||[]).reverse() as {id:string;sender:string;recipient:string|null;body:string;created_at:string}[];
+    const seen=chatSeenRef.current;
+    if(seen){
+      const incoming=ordered.filter(m=>!seen.has(m.id)&&m.sender!==user&&(m.recipient===null||m.recipient===user));
+      for(const m of ordered)seen.add(m.id);
+      if(seen.size>650)chatSeenRef.current=new Set(ordered.map(m=>m.id));
+      if(incoming.length){
+        const prefs=readNotificationPreferences(user);
+        // Play at most one chime per poll, even if several messages arrived.
+        const audible=[...incoming].reverse().find(m=>resolvedSound(prefs,threadId(m.sender,m.recipient,user)).tone!=='off');
+        if(audible)playNotificationSound(prefs,threadId(audible.sender,audible.recipient,user));
+        const latest=incoming[incoming.length-1];
+        const thread=threadId(latest.sender,latest.recipient,user);
+        const profile=data.profiles.find(p=>p.id===latest.sender);
+        const title=latest.recipient===null?'Grupo da galera ✳':profile?.name||'Mensagem privada';
+        const media=parseChatAttachment(latest.body);
+        const preview=media?(media.type==='video'?'🎬 Enviou um vídeo':media.type==='sticker'?'🧩 Enviou uma figurinha':'📷 Enviou uma foto'):latest.body.slice(0,105);
+        if(currentChatRef.current.view!=='chat'||(currentChatRef.current.to||'general')!==thread){
+          setIncomingNotice({thread,title,preview});
+        }
+        if(prefs.desktop&&typeof window!=='undefined'&&'Notification' in window&&Notification.permission==='granted'&&document.hidden){
+          try{
+            const notification=new Notification('Meu Zé · '+title,{body:preview,tag:'meuze-chat-'+thread,icon:'/icon-192.png'});
+            notification.onclick=()=>{window.focus();setChatTo(thread==='general'?null:thread);setView('chat');setIncomingNotice(null);notification.close()};
+          }catch{}
+        }
+      }
+    }else{
+      // The first fetch after login/reload is a baseline, not a new-message alert.
+      chatSeenRef.current=new Set(ordered.map(m=>m.id));
+    }
+    setMessages(ordered);setChatReady(true);
+  }finally{chatLoadBusyRef.current=false}
+}
+useEffect(()=>{
+  chatUserRef.current=data.me;
+  chatSeenRef.current=null;
+  setChatReady(false);
+  if(!data.me){setMessages([]);setIncomingNotice(null);return}
+  void loadChat();
+  const timer=setInterval(()=>void loadChat(),5000);
+  return()=>clearInterval(timer);
+},[data.me]);
 async function sendChat(payload?:string):Promise<boolean>{const sb=getSupabase();const content=(payload??chatText).trim();if(!sb||!content||!data.me)return false;const {error}=await sb.from('chat_messages').insert({sender:data.me,recipient:chatTo,body:content.slice(0,2000)});if(error){notify('Não foi possível enviar a mensagem. Tente novamente.');return false}if(payload===undefined)setChatText('');await loadChat();return true}
 async function uploadMedia(file:File,kind:'image'|'video'|'audio'){
   if(!data.me)return null;
