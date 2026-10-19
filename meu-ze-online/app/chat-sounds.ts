@@ -24,7 +24,7 @@ function tone(at:number,freq:number,endFreq:number,duration:number,volume:number
   oscillator.frequency.setValueAtTime(freq,at);
   oscillator.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),at+duration);
   gain.gain.setValueAtTime(0.0001,at);
-  gain.gain.exponentialRampToValueAtTime(Math.max(0.0002,volume),at+0.012);
+  gain.gain.exponentialRampToValueAtTime(Math.min(0.25,Math.max(0.0002,volume*2.1)),at+0.012);
   gain.gain.exponentialRampToValueAtTime(0.0001,at+duration);
   oscillator.connect(gain);
   gain.connect(context.destination);
