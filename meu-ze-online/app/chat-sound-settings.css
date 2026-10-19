@@ -1,1 +1,16 @@
 .zesoundpanel{position:absolute;right:8px;top:57px;z-index:30;background:#f8f6ed;color:#273427;padding:12px;border:2px solid #607c58}
+.zesoundpanel{width:min(330px,calc(100% - 16px));box-shadow:4px 4px 0 #0005;font:12px Arial,sans-serif}
+.zesoundpanel header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.zesoundpanel header strong{font:700 13px "Courier New",monospace}
+.zesoundpanel button{cursor:pointer}
+.zesoundpanel p{line-height:1.4;margin:10px 0}
+.zesoundtabs{display:flex;gap:5px}
+.zesoundtabs button{flex:1;border:1px solid #a2b19c;padding:8px 5px;font:700 11px Arial,sans-serif}
+.zesoundtabs button.active{background:#506b49;color:#fff}
+.zesoundcheck{display:flex;align-items:center;gap:8px;margin:14px 0;font-size:11px}
+.zesoundcheck input,.zesoundfield input{accent-color:#506b49}
+.zesoundfield{display:grid;gap:6px;margin:12px 0;font:700 11px Arial,sans-serif}
+.zesoundfield select{padding:9px;background:white;color:#222;border:1px solid #a2b19c;font:12px Arial,sans-serif}
+.zesoundfield input{width:100%}
+.zesoundpreview{display:flex;align-items:center;gap:7px;padding:9px 11px;background:#506b49;color:white;font:700 11px Arial,sans-serif}
+.zesoundpanel small{display:block;opacity:.7;margin-top:12px;line-height:1.4}
