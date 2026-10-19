@@ -36,6 +36,7 @@ public final class PushMessagingService extends FirebaseMessagingService {
     private static final String SETTINGS = "meuze_push";
     private static final String SOUND_ORIGIN = "https://bfmrrtcepuxuazsuqxjn.supabase.co/storage/v1/object/public/meuze-media/";
     private static final int MAX_SOUND_BYTES = 8 * 1024 * 1024;
+    private static final java.util.concurrent.ExecutorService SOUND_CACHE_EXECUTOR=Executors.newSingleThreadExecutor();
 
     @Override
     public void onNewToken(String token) {
@@ -128,7 +129,7 @@ public final class PushMessagingService extends FirebaseMessagingService {
     }
 
     static void cacheCustomSounds(Context context,String json){
-        Executors.newSingleThreadExecutor().execute(()->{
+        SOUND_CACHE_EXECUTOR.execute(()->{
             try{
                 JSONObject prefs=new JSONObject(json);
                 String global=prefs.optString("customUrl","");
