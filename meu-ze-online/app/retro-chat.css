@@ -97,3 +97,33 @@
   .zechatpeople .zechatpersonrow .zechatprofilelink{width:30px;flex-basis:30px}
   .zechatpeople .zechatpersonrow .zechatconversationlink{width:auto;min-width:0}
 }
+
+/* Group media and meme stickers — nostalgic UI, no changes outside the chat. */
+.zechatbubblemedia{max-width:min(90%,370px)}
+.zechatattachment{display:flex;flex-direction:column;gap:7px;min-width:0}
+.zechatattachment a{display:block;line-height:0}
+.zechatattachment img,.zechatattachment video{display:block;width:auto;max-width:100%;max-height:310px;object-fit:contain;border:1px solid color-mix(in srgb,var(--chat-ink) 14%,transparent)}
+.zechatattachment .zechatsticker{max-width:180px;max-height:180px;border:0;background:transparent}
+.zechatstickerreuse{align-self:flex-start;color:var(--chat-accent);font:700 10px Arial,sans-serif;text-decoration:underline;padding:3px 0}
+.zechat-attach{display:grid;place-items:center;flex:0 0 33px;min-width:33px;border:1px solid color-mix(in srgb,var(--chat-accent) 48%,transparent);color:var(--chat-accent);background:var(--chat-bg)}
+.zechat-attach.active,.zechat-attach:hover{background:color-mix(in srgb,var(--chat-accent) 18%,var(--chat-bg))}
+.zechatstickerpanel{border-top:2px solid var(--chat-accent);background:var(--chat-bg);padding:12px;box-shadow:0 -3px 0 #0001;max-height:245px;overflow-y:auto}
+.zechatstickerpanelhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.zechatstickerpanelhead strong{font:700 12px Arial,sans-serif;color:var(--chat-accent)}
+.zechatstickerpanelhead button{padding:3px}
+.zechatstickerpanel p{font:11px/1.4 Arial,sans-serif;opacity:.75;margin:6px 0 10px}
+.zechatstickergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}
+.zechatstickergrid button{display:grid;place-items:center;height:70px;border:1px solid color-mix(in srgb,var(--chat-accent) 25%,transparent);background:color-mix(in srgb,var(--chat-accent) 5%,var(--chat-bg));padding:4px}
+.zechatstickergrid button:hover{border-color:var(--chat-accent)}
+.zechatstickergrid img{max-width:100%;max-height:62px;object-fit:contain}
+.zechatstickergrid span{grid-column:1/-1;font:italic 12px Georgia,serif}
+.zechat-addsticker{margin-top:10px;display:flex;align-items:center;gap:6px;background:var(--chat-accent);color:white;padding:8px 10px;font:700 11px Arial,sans-serif}
+.zechat-uploadprogress{padding:9px 12px;background:var(--chat-bg);border-top:1px solid var(--chat-accent);font:700 11px Arial,sans-serif;display:grid;gap:5px}
+.zechat-uploadprogress progress{width:100%;height:7px;accent-color:var(--chat-accent)}
+@media(max-width:600px){
+ .zechatinput{gap:5px;padding:7px}
+ .zechat-attach{flex-basis:30px;min-width:30px}
+ .zechatinput input:not([type=file]){padding:9px 6px;font-size:12px}
+ .zechat-send{flex-basis:34px}
+ .zechatbubblemedia{max-width:92%}
+}
