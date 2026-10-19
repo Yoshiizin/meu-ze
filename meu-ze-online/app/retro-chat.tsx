@@ -60,9 +60,11 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const [chatUploading,setChatUploading]=useState(false);
   const [chatProgress,setChatProgress]=useState(0);
   const [stickerOpen,setStickerOpen]=useState(false);
-  const [soundsEnabled,setSoundsEnabled]=useState(true);
-  const seenMessagesRef=useRef<Set<string>>(new Set());
-  const soundInitializedRef=useRef(false);
+  const [notificationPrefs,setNotificationPrefs]=useState<NotificationPreferences>(()=>readNotificationPreferences(me));
+  const [soundPanel,setSoundPanel]=useState(false);
+  const [soundScope,setSoundScope]=useState<'global'|'chat'>('chat');
+  const [uploadingSound,setUploadingSound]=useState(false);
+  const soundInputRef=useRef<HTMLInputElement>(null);
   const mediaInputRef=useRef<HTMLInputElement>(null);
   const stickerInputRef=useRef<HTMLInputElement>(null);
   const logRef=useRef<HTMLDivElement>(null);
@@ -72,42 +74,40 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const stickers=Array.from(new Set(messages.map(m=>parseChatAttachment(m.body)).filter((a):a is ChatAttachment=>Boolean(a&&a.type==='sticker')).map(a=>a.url))).reverse().slice(0,40);
   const filtered=messages.filter(m=>chatTo===null?m.recipient===null:
     (m.sender===me&&m.recipient===chatTo)||(m.sender===chatTo&&m.recipient===me));
+  const thread=chatTo||'general';
+  const threadChoice=notificationPrefs.chats[thread]?.tone||'default';
+  const effectiveTone=threadChoice==='default'?notificationPrefs.tone:threadChoice;
+  useEffect(()=>{setNotificationPrefs(readNotificationPreferences(me))},[me]);
   useEffect(()=>{
-    try{setSoundsEnabled(window.localStorage.getItem('meuze-chat-sounds')!=='off')}catch{}
-  },[]);
-  useEffect(()=>{
-    if(!chatReady)return;
-    const seen=seenMessagesRef.current;
-    if(!soundInitializedRef.current){
-      messages.forEach(m=>seen.add(m.id));
-      soundInitializedRef.current=true;
-      return;
-    }
-    let hasIncoming=false;
-    for(const m of messages){
-      if(!seen.has(m.id)){
-        seen.add(m.id);
-        if(m.sender!==me)hasIncoming=true;
+    const onStorage=(event:StorageEvent)=>{if(event.key?.startsWith('meuze-notifications-v1-'))setNotificationPrefs(readNotificationPreferences(me))};
+    window.addEventListener('storage',onStorage);
+    return()=>window.removeEventListener('storage',onStorage);
+  },[me]);
+  function changeNotifications(next:NotificationPreferences){
+    setNotificationPrefs(next);
+    saveNotificationPreferences(me,next);
+  }
+  function changeTone(tone:NotificationTone|ConversationTone){
+    if(soundScope==='global')changeNotifications({...notificationPrefs,tone:tone as NotificationTone});
+    else changeNotifications({...notificationPrefs,chats:{...notificationPrefs.chats,[thread]:{...notificationPrefs.chats[thread],tone:tone as ConversationTone}}});
+  }
+  async function uploadSound(file:File|undefined){
+    if(!file)return;
+    if(!['audio/mpeg','audio/mp4','audio/ogg'].includes(file.type)){notify('Escolha um áudio MP3, M4A ou OGG.');return}
+    setUploadingSound(true);
+    try{
+      const url=await uploadMedia(file,'audio');
+      if(url){
+        if(soundScope==='global')changeNotifications({...notificationPrefs,tone:'custom',customUrl:url});
+        else changeNotifications({...notificationPrefs,chats:{...notificationPrefs.chats,[thread]:{tone:'custom',customUrl:url}}});
+        notify('Seu som personalizado está pronto! ✳');
       }
-    }
-    // The message feed is bounded to 300 entries; keep the seen set bounded too.
-    if(seen.size>650){
-      const live=new Set(messages.map(m=>m.id));
-      seen.clear();
-      live.forEach(id=>seen.add(id));
-    }
-    if(hasIncoming&&soundsEnabled)playChatCue('received');
-  },[messages,chatReady,me,soundsEnabled]);
-  function toggleSounds(){
-    const next=!soundsEnabled;
-    setSoundsEnabled(next);
-    try{window.localStorage.setItem('meuze-chat-sounds',next?'on':'off')}catch{}
-    if(next){unlockChatAudio();playChatCue('received')}
+    }finally{setUploadingSound(false)}
   }
   async function submitText(){
     unlockChatAudio();
     const sent=await sendChat();
-    if(sent&&soundsEnabled)playChatCue('sent');
+    if(sent)playSentSound(notificationPrefs,thread);
   }
   useEffect(()=>{
     const el=logRef.current;
@@ -126,7 +126,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   async function sendAttachment(attachment:ChatAttachment){
     unlockChatAudio();
     const sent=await sendChat(encodeChatAttachment(attachment));
-    if(sent){setStickerOpen(false);if(soundsEnabled)playChatCue('sent')}
+    if(sent){setStickerOpen(false);playSentSound(notificationPrefs,thread)}
     return sent;
   }
   async function attachFile(file:File|undefined,sticker:boolean){
