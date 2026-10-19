@@ -91,6 +91,15 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
     if(sent)playSentSound(notificationPrefs,thread);
   }
   useEffect(()=>{
+    const handler=(event:Event)=>{
+      const id=(event as CustomEvent<string>).detail;
+      if(id==='general')setChatTo(null);
+      else if(typeof id==='string'&&profiles.some(p=>p.id===id))setChatTo(id);
+    };
+    window.addEventListener('meuze-open-chat',handler);
+    return()=>window.removeEventListener('meuze-open-chat',handler);
+  },[setChatTo,profiles]);
+  useEffect(()=>{
     const el=logRef.current;
     if(!el)return;
     const changed=lastChatRef.current!==chatTo;
