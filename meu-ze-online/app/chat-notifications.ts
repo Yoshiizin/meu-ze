@@ -49,7 +49,7 @@ export function readNotificationPreferences(user:string):NotificationPreferences
 
 export function saveNotificationPreferences(user:string,prefs:NotificationPreferences){
   if(typeof window==='undefined'||!user)return;
-  try{window.localStorage.setItem(storageKey(user),JSON.stringify(prefs));window.MeuZeAndroid?.syncSettings(user,JSON.stringify(prefs));window.dispatchEvent(new CustomEvent('meuze-notification-settings-changed',{detail:user}));window.MeuZeAndroid?.refreshToken()}catch{}
+  try{window.localStorage.setItem(storageKey(user),JSON.stringify(prefs));window.MeuZeAndroid?.syncSettings(user,JSON.stringify(prefs));window.dispatchEvent(new CustomEvent('meuze-notification-settings-changed',{detail:user}))}catch{}
 }
 
 export function threadId(sender:string,recipient:string|null,me:string):string{
