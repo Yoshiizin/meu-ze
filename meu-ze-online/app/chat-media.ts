@@ -11,9 +11,13 @@ const baseUrl=(process.env.NEXT_PUBLIC_SUPABASE_URL||'').replace(/\/$/,'');
 const mediaPrefix=baseUrl+'/storage/v1/object/public/meuze-media/';
 
 export function parseChatAttachment(body:string):ChatAttachment|null{
-  if(!body.startsWith(prefix)||!baseUrl)return null;
+  if(!baseUrl)return null;
   try{
-    const obj=JSON.parse(body.slice(prefix.length)) as Partial<ChatAttachment>;
+    const readable=body.match(/^(📷 Foto|🎬 Vídeo|🧩 Figurinha): (https:\/\/[^\s]+)$/);
+    const obj:Partial<ChatAttachment>=readable
+      ? {type:readable[1]==='📷 Foto'?'image':readable[1]==='🎬 Vídeo'?'video':'sticker',url:readable[2]}
+      : body.startsWith(prefix)?JSON.parse(body.slice(prefix.length)) as Partial<ChatAttachment>:{};
+
     if(!obj||!['image','video','sticker'].includes(String(obj.type)))return null;
     if(typeof obj.url!=='string'||obj.url.length>1000||!obj.url.startsWith(mediaPrefix))return null;
     const rest=obj.url.slice(mediaPrefix.length);
@@ -26,7 +30,9 @@ export function parseChatAttachment(body:string):ChatAttachment|null{
 }
 
 export function encodeChatAttachment(attachment:ChatAttachment):string{
-  return prefix+JSON.stringify({type:attachment.type,url:attachment.url,caption:(attachment.caption||'').slice(0,400)});
+  // Readable in older deployments that only support plain-text chat.
+  if(!attachment.caption)return (attachment.type==='image'?'📷 Foto':attachment.type==='video'?'🎬 Vídeo':'🧩 Figurinha')+': '+attachment.url;
+  return prefix+JSON.stringify({type:attachment.type,url:attachment.url,caption:attachment.caption.slice(0,400)});
 }
 
 export async function uploadChatFile(file:File,userId:string,onProgress:(percent:number)=>void):Promise<string>{
