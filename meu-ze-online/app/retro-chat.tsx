@@ -1,5 +1,5 @@
 'use client';
-import {useState, type CSSProperties, type ReactNode} from 'react';
+import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from 'react';
 import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon} from 'lucide-react';
 import './retro-chat.css';
 
@@ -50,10 +50,20 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const [level,setLevel]=useState(1);
   const [draft,setDraft]=useState<ChatTheme>(original);
   const [saving,setSaving]=useState(false);
+  const logRef=useRef<HTMLDivElement>(null);
+  const lastChatRef=useRef<string|null>(null);
   const theme=themeOf(mine);
   const selected=profiles.find(p=>p.id===chatTo);
   const filtered=messages.filter(m=>chatTo===null?m.recipient===null:
     (m.sender===me&&m.recipient===chatTo)||(m.sender===chatTo&&m.recipient===me));
+  useEffect(()=>{
+    const el=logRef.current;
+    if(!el)return;
+    const changed=lastChatRef.current!==chatTo;
+    lastChatRef.current=chatTo;
+    const nearBottom=el.scrollHeight-el.scrollTop-el.clientHeight<140;
+    if(changed||nearBottom)el.scrollTop=el.scrollHeight;
+  },[chatTo,filtered.length,chatReady]);
   const chatStyle={
     '--chat-bg':theme.bg,'--chat-ink':theme.ink,'--chat-accent':theme.accent,
     '--chat-sent':theme.sent,'--chat-received':theme.received,
@@ -90,7 +100,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
           </div>
           <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
         </header>
-        <div className="zechatlog" aria-live="off" aria-label="Histórico de mensagens">
+        <div ref={logRef} className="zechatlog" aria-live="off" aria-label="Histórico de mensagens">
           {filtered.map(m=>{
             const author=profiles.find(p=>p.id===m.sender);
             return <div key={m.id} className={'zechatbubble '+(m.sender===me?'mine':'received')}>
