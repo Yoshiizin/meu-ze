@@ -22,6 +22,7 @@ function drawCrop(canvas:HTMLCanvasElement,img:HTMLImageElement,zoom:number,x:nu
 }
 export default function MediaCropper({file,kind,onCancel,onConfirm}:Props){
   const canvasRef=useRef<HTMLCanvasElement>(null);
+  const dragRef=useRef<{px:number;py:number;x:number;y:number}|null>(null);
   const [img,setImg]=useState<HTMLImageElement|null>(null);
   const [zoom,setZoom]=useState(1);
   const [x,setX]=useState(50);
@@ -43,6 +44,17 @@ export default function MediaCropper({file,kind,onCancel,onConfirm}:Props){
     const canvas=canvasRef.current;
     if(canvas&&img)drawCrop(canvas,img,zoom,x,y);
   },[img,zoom,x,y,kind]);
+  function movePointer(clientX:number,clientY:number){
+    const drag=dragRef.current;
+    const canvas=canvasRef.current;
+    if(!drag||!img||!canvas)return;
+    const rect=canvas.getBoundingClientRect();
+    const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight)*zoom;
+    const overflowX=w-img.naturalWidth*scale;
+    const overflowY=h-img.naturalHeight*scale;
+    if(Math.abs(overflowX)>0.1)setX(Math.max(0,Math.min(100,drag.x+((clientX-drag.px)*w/rect.width)/overflowX*100)));
+    if(Math.abs(overflowY)>0.1)setY(Math.max(0,Math.min(100,drag.y+((clientY-drag.py)*h/rect.height)/overflowY*100)));
+  }
   async function confirm(){
     if(!img||working)return;
     setWorking(true);setError('');
@@ -60,8 +72,13 @@ export default function MediaCropper({file,kind,onCancel,onConfirm}:Props){
   return <div className="zecrop-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget&&!working)onCancel()}}>
     <section className="zecrop-dialog" role="dialog" aria-modal="true" aria-label={'Ajustar '+(kind==='avatar'?'foto de perfil':'banner')}>
       <header className="zecrop-head"><div><small>✳ PERSONALIZE DO SEU JEITO</small><h2>{kind==='avatar'?'Ajustar foto de perfil':'Ajustar banner'}</h2></div><button type="button" onClick={onCancel} disabled={working} aria-label="Fechar"><X size={20}/></button></header>
-      <p className="zecrop-description">Ajuste o enquadramento. Esta é a parte da imagem que vai aparecer no seu perfil.</p>
-      <div className={'zecrop-stage '+(kind==='avatar'?'zecrop-stage-avatar':'zecrop-stage-cover')}>
+      <p className="zecrop-description">Arraste a imagem ou use os controles para ajustar. Esta é a parte que vai aparecer no seu perfil.</p>
+      <div className={'zecrop-stage '+(kind==='avatar'?'zecrop-stage-avatar':'zecrop-stage-cover')}
+        onPointerDown={e=>{if(!img)return;dragRef.current={px:e.clientX,py:e.clientY,x,y};e.currentTarget.setPointerCapture(e.pointerId)}}
+        onPointerMove={e=>{if(dragRef.current)movePointer(e.clientX,e.clientY)}}
+        onPointerUp={e=>{dragRef.current=null;if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId)}}
+        onPointerCancel={()=>{dragRef.current=null}}
+      >
         {loading?<span>Preparando sua imagem…</span>:<canvas ref={canvasRef} width={w} height={h} aria-label="Prévia do enquadramento"/>}
       </div>
       <div className="zecrop-controls">
