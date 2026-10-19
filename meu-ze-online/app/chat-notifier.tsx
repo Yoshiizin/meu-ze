@@ -2,7 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {Bell,MessageCircle,X} from 'lucide-react';
 import {getSupabase} from '../lib/supabase';
-import {playNotificationSound,readNotificationPreferences,resolvedSound,threadId} from './chat-notifications';
+import {playNotificationSound,readNotificationPreferences,threadId} from './chat-notifications';
 import {unlockChatAudio} from './chat-sounds';
 import './chat-notifier.css';
 
@@ -35,9 +35,7 @@ export default function ChatNotifier(){
         for(const m of rows){
           if(seen.has(m.id))continue;
           seen.add(m.id);
-          if(m.sender===me||!prefs.enabled)continue;
-          const thread=threadId(m.sender,m.recipient,me);
-          if(resolvedSound(prefs,thread).tone==='off')continue;
+          if(m.sender===me)continue;
           if(!newest)newest=m;
         }
         if(seen.size>650){seen.clear();for(const m of rows)seen.add(m.id)}
