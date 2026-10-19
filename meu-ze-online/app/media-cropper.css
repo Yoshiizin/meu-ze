@@ -24,3 +24,6 @@
 .zecrop-actions .zecrop-save{background:#2e382e;color:#fff;border-color:#2e382e}
 .zecrop-actions button:disabled{opacity:.5}
 @media(max-width:480px){.zecrop-dialog{padding:12px;box-shadow:3px 3px 0 #0008}.zecrop-head h2{font-size:19px}.zecrop-controls label{grid-template-columns:90px minmax(0,1fr) 38px;gap:6px}.zecrop-actions{gap:6px}.zecrop-actions button{padding:9px 8px;font-size:10px}}
+
+.zecrop-stage{cursor:grab;touch-action:none;user-select:none}
+.zecrop-stage:active{cursor:grabbing}
