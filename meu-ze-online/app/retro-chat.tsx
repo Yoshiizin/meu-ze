@@ -1,7 +1,8 @@
 'use client';
 import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from 'react';
-import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon} from 'lucide-react';
+import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon, Video, Smile, Paperclip} from 'lucide-react';
 import './retro-chat.css';
+import {encodeChatAttachment,parseChatAttachment,uploadChatFile, type ChatAttachment} from './chat-media';
 
 type Profile = {id:string;name:string;bio:string;theme:string};
 type Message = {id:string;sender:string;recipient:string|null;body:string;created_at:string};
@@ -9,10 +10,11 @@ type ChatTheme = {bg:string;ink:string;accent:string;sent:string;received:string
 type Props = {
   me:string; mine?:Profile; profiles:Profile[]; messages:Message[]; chatReady:boolean;
   chatTo:string|null; setChatTo:(id:string|null)=>void;
-  chatText:string; setChatText:(s:string)=>void; sendChat:()=>Promise<void>;
+  chatText:string; setChatText:(s:string)=>void; sendChat:(payload?:string)=>Promise<boolean>;
   avatar:(p?:Profile,large?:boolean)=>ReactNode;
   act:(action:Record<string,unknown>)=>Promise<boolean>;
   openProfile:(id:string)=>void;
+  notify:(message:string)=>void;
   uploadMedia:(file:File,kind:'image'|'video'|'audio')=>Promise<string|null>;
 };
 
@@ -47,16 +49,22 @@ const colorFields:{key:'bg'|'ink'|'accent'|'sent'|'received';label:string}[]=[
   {key:'sent',label:'Minhas mensagens'},{key:'received',label:'Mensagens recebidas'}
 ];
 
-export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,setChatTo,chatText,setChatText,sendChat,avatar,act,uploadMedia,openProfile}:Props){
+export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,setChatTo,chatText,setChatText,sendChat,avatar,act,uploadMedia,openProfile,notify}:Props){
   const [editing,setEditing]=useState(false);
   const [level,setLevel]=useState(1);
   const [draft,setDraft]=useState<ChatTheme>(original);
   const [saving,setSaving]=useState(false);
   const [uploading,setUploading]=useState(false);
+  const [chatUploading,setChatUploading]=useState(false);
+  const [chatProgress,setChatProgress]=useState(0);
+  const [stickerOpen,setStickerOpen]=useState(false);
+  const mediaInputRef=useRef<HTMLInputElement>(null);
+  const stickerInputRef=useRef<HTMLInputElement>(null);
   const logRef=useRef<HTMLDivElement>(null);
   const lastChatRef=useRef<string|null>(null);
   const theme=themeOf(mine);
   const selected=profiles.find(p=>p.id===chatTo);
+  const stickers=Array.from(new Set(messages.map(m=>parseChatAttachment(m.body)).filter((a):a is ChatAttachment=>Boolean(a&&a.type==='sticker')).map(a=>a.url))).reverse().slice(0,40);
   const filtered=messages.filter(m=>chatTo===null?m.recipient===null:
     (m.sender===me&&m.recipient===chatTo)||(m.sender===chatTo&&m.recipient===me));
   useEffect(()=>{
@@ -73,6 +81,21 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
     '--chat-wallpaper':theme.wallpaper?'url("'+theme.wallpaper+'")':'none',
     fontFamily:fonts[theme.font]||fonts.sans
   } as CSSProperties;
+  async function sendAttachment(attachment:ChatAttachment){
+    const sent=await sendChat(encodeChatAttachment(attachment));
+    if(sent)setStickerOpen(false);
+    return sent;
+  }
+  async function attachFile(file:File|undefined,sticker:boolean){
+    if(!file||chatUploading)return;
+    if(sticker&&!['image/png','image/webp','image/gif'].includes(file.type)){notify('Figurinhas precisam ser PNG, WEBP ou GIF.');return}
+    setChatUploading(true);setChatProgress(0);
+    try{
+      const url=await uploadChatFile(file,me,setChatProgress);
+      await sendAttachment({type:sticker?'sticker':file.type.startsWith('video/')?'video':'image',url});
+    }catch(error){notify(error instanceof Error?'Não foi possível enviar: '+error.message:'Não foi possível enviar o arquivo. Confira o limite do Supabase.')}
+    finally{setChatUploading(false);setChatProgress(0)}
+  }
   function openEditor(){setDraft({...theme});setLevel(1);setEditing(true)}
   async function save(){
     if(saving)return;
@@ -89,7 +112,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
         <div className="zechatpeople-title">✳ CONVERSAS</div>
         <button type="button" className={chatTo===null?'selected':''} aria-current={chatTo===null?'page':undefined} onClick={()=>setChatTo(null)}>
           <span className="zechatgeneral"><Users size={18}/></span>
-          <span className="zechatpersonname"><strong>Chat geral</strong><small>Toda a galera</small></span>
+          <span className="zechatpersonname"><strong>Grupo da galera ✳</strong><small>{profiles.length} amigos · todos juntos</small></span>
         </button>
         {profiles.filter(p=>p.id!==me).map(p=><div key={p.id} className={'zechatpersonrow '+(chatTo===p.id?'selected':'')}>
           <button type="button" className="zechatprofilelink" onClick={()=>openProfile(p.id)} title={'Visitar perfil de '+p.name} aria-label={'Visitar perfil de '+p.name}>{avatar(p)}</button>
@@ -102,24 +125,38 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
         <header className="zechatroomhead">
           <div className="zechatroomtitle">
             {selected?<button type="button" className="zechatprofilelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name} aria-label={'Visitar perfil de '+selected.name}>{avatar(selected)}</button>:<span className="zechatgeneral"><Users size={18}/></span>}
-            <span>{selected?<button type="button" className="zechatnamelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name}>{selected.name}</button>:<strong>Sala da galera</strong>}<small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> Conversa com todos</>}</small></span>
+            <span>{selected?<button type="button" className="zechatnamelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name}>{selected.name}</button>:<strong>Grupo da galera ✳</strong>}<small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> {profiles.length} amigos · sala de todo mundo</>}</small></span>
           </div>
           <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
         </header>
         <div ref={logRef} className="zechatlog" aria-live="off" aria-label="Histórico de mensagens">
           {filtered.map(m=>{
             const author=profiles.find(p=>p.id===m.sender);
-            return <div key={m.id} className={'zechatbubble '+(m.sender===me?'mine':'received')}>
+            const attachment=parseChatAttachment(m.body);
+            return <div key={m.id} className={'zechatbubble '+(m.sender===me?'mine':'received')+(attachment?' zechatbubblemedia':'')}>
+
               <div className="zechatbubblehead"><button type="button" className="zechatprofilelink" onClick={()=>openProfile(m.sender)} title={'Visitar perfil de '+(author?.name||'Zé')} aria-label={'Visitar perfil de '+(author?.name||'Zé')}>{avatar(author)}</button><button type="button" className="zechatnamelink" onClick={()=>openProfile(m.sender)}>{m.sender===me?'Você':author?.name||'Zé'}</button></div>
-              <p>{m.body}</p>
+              {attachment?<div className="zechatattachment">{attachment.type==='video'?<video src={attachment.url} controls playsInline preload="metadata"/>:<a href={attachment.url} target="_blank" rel="noopener noreferrer" title="Abrir imagem"><img src={attachment.url} alt={attachment.type==='sticker'?'Figurinha de meme':'Foto enviada no chat'} loading="lazy" className={attachment.type==='sticker'?'zechatsticker':''}/></a>}{attachment.caption&&<p>{attachment.caption}</p>}{attachment.type==='sticker'&&<button type="button" className="zechatstickerreuse" onClick={()=>setStickerOpen(true)}>✳ Ver figurinhas</button>}</div>:<p>{m.body}</p>}
               <small>{new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</small>
             </div>;
           })}
           {!chatReady&&<p className="zechatempty">Conectando à conversa…</p>}
           {chatReady&&filtered.length===0&&<p className="zechatempty">✳ Ainda não tem mensagem aqui. Manda um oi!</p>}
         </div>
+        {stickerOpen&&<div className="zechatstickerpanel" aria-label="Figurinhas de memes">
+          <div className="zechatstickerpanelhead"><strong>✳ Figurinhas da galera</strong><button type="button" onClick={()=>setStickerOpen(false)} aria-label="Fechar figurinhas"><X size={17}/></button></div>
+          <p>Envie sua figurinha em PNG, WEBP ou GIF. As figurinhas enviadas ficam disponíveis aqui para reutilizar.</p>
+          <div className="zechatstickergrid">{stickers.map(url=><button type="button" key={url} disabled={chatUploading} onClick={()=>void sendAttachment({type:'sticker',url})} title="Enviar esta figurinha"><img src={url} alt="Figurinha disponível" loading="lazy"/></button>)}
+          {!stickers.length&&<span>O álbum está vazio. Seja o primeiro a mandar uma figurinha!</span>}</div>
+          <button type="button" className="zechat-addsticker" disabled={chatUploading} onClick={()=>stickerInputRef.current?.click()}><ImageIcon size={15}/> Adicionar figurinha</button>
+        </div>}
+        {chatUploading&&<div className="zechat-uploadprogress" role="status"><span>Enviando arquivo… {chatProgress}%</span><progress max={100} value={chatProgress}/></div>}
         <form className="zechatinput" onSubmit={e=>{e.preventDefault();void sendChat()}}>
-          <input aria-label="Escrever mensagem" maxLength={2000} value={chatText} onChange={e=>setChatText(e.target.value)} placeholder={chatTo?'Escrever mensagem privada…':'Conversar com a galera…'}/>
+          <input ref={mediaInputRef} type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" onChange={e=>{const f=e.target.files?.[0];e.target.value='';void attachFile(f,false)}}/>
+          <input ref={stickerInputRef} type="file" hidden accept="image/png,image/webp,image/gif" onChange={e=>{const f=e.target.files?.[0];e.target.value='';void attachFile(f,true)}}/>
+          <button type="button" className="zechat-attach" disabled={chatUploading} title="Enviar foto ou vídeo" aria-label="Enviar foto ou vídeo" onClick={()=>mediaInputRef.current?.click()}><Paperclip size={19}/></button>
+          <button type="button" className={'zechat-attach '+(stickerOpen?'active':'')} title="Figurinhas de memes" aria-label="Figurinhas de memes" onClick={()=>setStickerOpen(v=>!v)}><Smile size={19}/></button>
+          <input aria-label="Escrever mensagem" maxLength={2000} value={chatText} onChange={e=>setChatText(e.target.value)} placeholder={chatTo?'Mensagem privada…':'Fala com a galera…'}/>
           <button type="submit" className="zechat-send" disabled={!chatText.trim()} aria-label="Enviar mensagem"><Send size={18}/></button>
         </form>
       </div>
