@@ -50,11 +50,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view android-v1.1.0 >/dev/null 2>&1; then
-            echo "Release android-v1.1.0 already exists. Not overwriting signed APK."
+          if gh release view android-v2.0.0 >/dev/null 2>&1; then
+            echo "Release android-v2.0.0 already exists. Not overwriting signed APK."
           else
-            gh release create android-v1.1.0 Meu-Ze.apk \
-              --title "Meu Zé para Android v1.1.0 (teste)" \
+            gh release create android-v2.0.0 Meu-Ze.apk \
+              --title "Meu Zé 2.0 para Android (teste)" \
               --notes "APK de teste do Meu Zé, com ícone do dinossaurinho. Instale no Android 10 ou superior. O iPhone usa https://meu-ze.vercel.app/ pelo Safari > Adicionar à Tela de Início. Este APK inclui integração Firebase FCM para notificações pop-up com sons por conversa. Configure as variáveis Firebase no GitHub e as credenciais do servidor na Vercel. APK de teste: futuras versões podem exigir reinstalação." \
               --latest
           fi
