@@ -211,7 +211,7 @@ public final class MainActivity extends Activity {
     }
     private void openPendingChat(){
         String thread=getIntent().getStringExtra("thread");
-        if(thread==null||!thread.matches("general|[0-9a-fA-F-]{36}"))return;
+        if(thread==null||!thread.matches("general|[0-9a-fA-F-]{36}")||webView==null||webView.getUrl()==null)return;
         getIntent().removeExtra("thread");
         webView.evaluateJavascript("localStorage.setItem('meuze-open-chat-pending',"+JSONObject.quote(thread)+");"+
             "window.dispatchEvent(new CustomEvent('meuze-open-chat',{detail:"+JSONObject.quote(thread)+"}));",null);
