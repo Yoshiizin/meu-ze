@@ -43,7 +43,11 @@ export default function ChatSoundSettings({prefs,thread,chatName,onChange,onClos
   <label className="zesoundfield">Volume · {prefs.volume}%
    <input type="range" min={0} max={100} step={5} value={prefs.volume} onChange={e=>onChange({...prefs,volume:Number(e.target.value)})}/>
   </label>
-  <button className="zesoundpreview" onClick={()=>{unlockChatAudio();playNotificationSound(prefs,thread,true)}}><Volume2 size={15}/> Testar som</button>
+  <input ref={fileRef} type="file" hidden accept=".mp3,.m4a,.ogg,audio/mpeg,audio/mp4,audio/ogg" onChange={e=>{const f=e.target.files?.[0];e.target.value='';void uploadSound(f)}}/>
+  <div className="zesoundactions">
+   <button type="button" disabled={uploading} onClick={()=>fileRef.current?.click()}><Paperclip size={14}/>{uploading?'Enviando…':'Enviar meu som'}</button>
+   <button className="zesoundpreview" type="button" onClick={()=>{unlockChatAudio();playNotificationSound(scope==='global'?{...prefs,chats:{}}:prefs,thread,true)}}><Volume2 size={15}/> Testar som</button>
+  </div>
   <small>Salvo neste navegador. Funciona enquanto o site estiver aberto.</small>
  </div>;
 }
