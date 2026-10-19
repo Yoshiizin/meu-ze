@@ -2,7 +2,8 @@
 import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from 'react';
 import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon, Video, Smile, Paperclip, Volume2, VolumeX} from 'lucide-react';
 import './retro-chat.css';
-import {playChatCue,unlockChatAudio} from './chat-sounds';
+import {unlockChatAudio} from './chat-sounds';
+import {readNotificationPreferences,saveNotificationPreferences,playNotificationSound,playSentSound,type NotificationPreferences,type NotificationTone,type ConversationTone} from './chat-notifications';
 import {encodeChatAttachment,parseChatAttachment,uploadChatFile, type ChatAttachment} from './chat-media';
 
 type Profile = {id:string;name:string;bio:string;theme:string};
