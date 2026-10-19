@@ -50,6 +50,15 @@ function sanitizeTheme(v:unknown){
   const color=(s:unknown,fallback:string)=>typeof s==='string'&&/^#[0-9a-fA-F]{6}$/.test(s)?s:fallback;
   const image=(s:unknown,n:number)=>typeof s==='string' && s.length<=n &&
     (/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s)||/^https:\/\/[^\s<>"]+$/.test(s))?s:'';
+  const chat=(x.chat && typeof x.chat==='object' && !Array.isArray(x.chat) ? x.chat : {}) as Record<string,unknown>;
+  const chatTheme={
+    bg:color(chat.bg,'#ffffff'),ink:color(chat.ink,'#141414'),
+    accent:color(chat.accent,'#1700b7'),sent:color(chat.sent,'#e8e6ff'),
+    received:color(chat.received,'#f3f3f3'),
+    font:['sans','serif','mono'].includes(String(chat.font))?chat.font:'sans',
+    pattern:['plain','dots','grid'].includes(String(chat.pattern))?chat.pattern:'plain',
+    wallpaper:image(chat.wallpaper,1000)
+  };
   const song=str(x.song,500);
   const pinList=Array.isArray(x.pinned)?x.pinned.filter((id:unknown)=>typeof id==='string'&&/^[0-9a-f-]{36}$/.test(id)).slice(0,20):[];
   return {
@@ -59,7 +68,7 @@ function sanitizeTheme(v:unknown){
     radius:Number.isFinite(x.radius)?Math.max(0,Math.min(36,Math.round(Number(x.radius)))):0,
     avatar:image(x.avatar,800000),cover:image(x.cover,1400000),wallpaper:image(x.wallpaper,1000),sticker:str(x.sticker,12),
     song:/^https:\/\/[^\s<>"]+$/.test(song)?song:'',songName:str(x.songName,100),
-    favorites:str(x.favorites,500),layout:['list','grid'].includes(String(x.layout))?x.layout:'list',pinned:pinList
+    favorites:str(x.favorites,500),layout:['list','grid'].includes(String(x.layout))?x.layout:'list',pinned:pinList,chat:chatTheme
   };
 }
 
