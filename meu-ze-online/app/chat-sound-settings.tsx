@@ -4,15 +4,24 @@ import {Paperclip,Volume2,X} from 'lucide-react';
 import {playNotificationSound,type NotificationPreferences,type NotificationTone,type ConversationTone} from './chat-notifications';
 import {unlockChatAudio} from './chat-sounds';
 import './chat-sound-settings.css';
-type Props={prefs:NotificationPreferences;thread:string;chatName:string;onChange:(p:NotificationPreferences)=>void;onClose:()=>void;uploadMedia:(file:File,kind:'image'|'video'|'audio')=>Promise<string|null>;notify:(s:string)=>void};
-export default function ChatSoundSettings({prefs,thread,chatName,onChange,onClose,uploadMedia,notify}:Props){
- const [scope,setScope]=useState<'global'|'chat'>('chat');
+type Props={prefs:NotificationPreferences;thread:string;chatName:string;initialScope?:'global'|'chat';onChange:(p:NotificationPreferences)=>void;onClose:()=>void;uploadMedia:(file:File,kind:'image'|'video'|'audio')=>Promise<string|null>;notify:(s:string)=>void};
+export default function ChatSoundSettings({prefs,thread,chatName,initialScope='chat',onChange,onClose,uploadMedia,notify}:Props){
+ const [scope,setScope]=useState<'global'|'chat'>(initialScope);
  const [uploading,setUploading]=useState(false);
  const fileRef=useRef<HTMLInputElement>(null);
  const selected=prefs.chats[thread]?.tone||'default';
  function changeTone(tone:NotificationTone|ConversationTone){
   if(scope==='global')onChange({...prefs,tone:tone as NotificationTone});
   else onChange({...prefs,chats:{...prefs.chats,[thread]:{tone:tone as ConversationTone}}});
+ }
+ async function changeDesktop(checked:boolean){
+  if(!checked){onChange({...prefs,desktop:false});return}
+  if(typeof window==='undefined'||!('Notification' in window)){notify('Seu navegador não oferece notificações do sistema.');return}
+  try{
+   const permission=await Notification.requestPermission();
+   if(permission==='granted')onChange({...prefs,desktop:true});
+   else notify('Permita notificações nas configurações do navegador para ativar os avisos.');
+  }catch{notify('Não foi possível ativar as notificações do navegador.')}
  }
  async function uploadSound(file?:File){
   if(!file||uploading)return;
@@ -34,6 +43,7 @@ export default function ChatSoundSettings({prefs,thread,chatName,onChange,onClos
    <button className={scope==='chat'?'active':''} onClick={()=>setScope('chat')}>✉ Esta conversa</button>
   </div>
   <label className="zesoundcheck"><input type="checkbox" checked={prefs.enabled} onChange={e=>onChange({...prefs,enabled:e.target.checked})}/> Ativar notificações sonoras</label>
+  <label className="zesoundcheck"><input type="checkbox" checked={prefs.desktop} onChange={e=>{void changeDesktop(e.target.checked)}}/> Avisos do navegador quando a aba estiver em segundo plano</label>
   <label className="zesoundfield">Som
    <select value={scope==='global'?prefs.tone:selected} onChange={e=>changeTone(e.target.value as NotificationTone|ConversationTone)}>
     {scope==='chat'&&<option value="default">Usar som geral</option>}
@@ -48,6 +58,6 @@ export default function ChatSoundSettings({prefs,thread,chatName,onChange,onClos
    <button type="button" disabled={uploading} onClick={()=>fileRef.current?.click()}><Paperclip size={14}/>{uploading?'Enviando…':'Enviar meu som'}</button>
    <button className="zesoundpreview" type="button" onClick={()=>{unlockChatAudio();playNotificationSound(scope==='global'?{...prefs,chats:{}}:prefs,thread,true)}}><Volume2 size={15}/> Testar som</button>
   </div>
-  <small>Salvo neste navegador. Funciona enquanto o site estiver aberto.</small>
+  <small>Preferências salvas neste navegador. Sons e avisos funcionam enquanto o site estiver aberto; alguns navegadores exigem um clique antes de liberar áudio.</small>
  </div>;
 }
