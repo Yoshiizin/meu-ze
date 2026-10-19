@@ -51,6 +51,7 @@ public final class PushMessagingService extends FirebaseMessagingService {
         String userId=data.get("userId");
         if(userId==null||!userId.equals(getSharedPreferences(SETTINGS,MODE_PRIVATE).getString("user","")))return;
         if(MainActivity.isForeground)return; // Foreground already has the site's chat alerts.
+        if(Build.VERSION.SDK_INT>=33&&checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED)return;
         String thread=data.get("thread");
         if(thread==null||thread.length()>100)return;
         String title=data.get("title"),body=data.get("body");
