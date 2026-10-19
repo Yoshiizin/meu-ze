@@ -29,6 +29,6 @@ Abra https://meu-ze.vercel.app/ no Safari e escolha **Compartilhar > Adicionar �
 ## Limitações
 - Internet necessária para feed e chat.
 - Mídias são escolhidas pelo seletor de arquivos Android.
-- A versão 1.1 inclui suporte nativo a notificações FCM, mas exige configurar Firebase, Supabase e Vercel. Veja [PUSH-SETUP.md](./PUSH-SETUP.md). A versão 1.0 não recebe push em segundo plano.
+- A versão 2.0 inclui suporte nativo a notificações FCM, mas exige configurar Firebase, Supabase e Vercel. Veja [PUSH-SETUP.md](./PUSH-SETUP.md). A versão 1.0 não recebe push em segundo plano.
 - APK é exclusivo do Android. Não se instala no iPhone.
 - Nunca embuta chaves privadas ou credenciais do Supabase no app.
