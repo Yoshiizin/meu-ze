@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Meu Zé</string>
+    <string name="app_name">Meu Zé 2.0</string>
     <string name="connecting">Entrando no Meu Zé…</string>
     <string name="offline">Sem conexão com a internet.</string>
     <string name="retry">Tentar novamente</string>
