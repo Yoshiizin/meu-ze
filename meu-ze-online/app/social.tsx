@@ -2,6 +2,10 @@
 import {useState,useEffect,useRef,type CSSProperties} from 'react';
 import {getSupabase, configured} from '../lib/supabase';
 import RetroChat from './retro-chat';
+import ChatSoundSettings from './chat-sound-settings';
+import {readNotificationPreferences,saveNotificationPreferences,playNotificationSound,threadId,resolvedSound,type NotificationPreferences} from './chat-notifications';
+import {parseChatAttachment} from './chat-media';
+import {unlockChatAudio} from './chat-sounds';
 import ProfilePlayer from './profile-player';
 import MediaCropper from './media-cropper';
 import {uploadSiteFile} from './chat-media';
@@ -21,10 +25,31 @@ const fonts:Record<string,string>={sans:'Arial, sans-serif',serif:'Georgia, seri
 export default function Social(){
 const [data,setData]=useState<{me:string;profiles:Profile[];posts:Post[];likes:{post:string;user:string}[];comments:{id:string;post:string;author:string;body:string}[]}>({me:'',profiles:[],posts:[],likes:[],comments:[]});
 const initialSessionResolved=useRef(false);
+const chatSeenRef=useRef<Set<string>|null>(null);
+const chatLoadBusyRef=useRef(false);
+const chatUserRef=useRef('');
+const currentChatRef=useRef<{view:string;to:string|null}>({view:'welcome',to:null});
+const [incomingNotice,setIncomingNotice]=useState<{thread:string;title:string;preview:string}|null>(null);
+const [globalSoundPanel,setGlobalSoundPanel]=useState(false);
+const [notificationPrefs,setNotificationPrefs]=useState<NotificationPreferences>(()=>readNotificationPreferences(''));
 const [view,setView]=useState('welcome'),[profileId,setProfileId]=useState(''),[scene,setScene]=useState('geral'),[search,setSearch]=useState(''),[modal,setModal]=useState(''),[toast,setToast]=useState(''),[busy,setBusy]=useState(false),[loaded,setLoaded]=useState(false),[demo,setDemo]=useState(false),[connection,setConnection]=useState('');
 const [account,setAccount]=useState<User|null>(null),[needsInvite,setNeedsInvite]=useState(false),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[inviteCode,setInviteCode]=useState(''),[authMode,setAuthMode]=useState<'signin'|'signup'|'forgot'|'reset'>('signin'),[authBusy,setAuthBusy]=useState(false);
 const [chatTo,setChatTo]=useState<string|null>(null),[chatText,setChatText]=useState(''),[messages,setMessages]=useState<{id:string;sender:string;recipient:string|null;body:string;created_at:string}[]>([]),[chatReady,setChatReady]=useState(false),[postMedia,setPostMedia]=useState<{url:string;type:string}[]>([]),[uploadBusy,setUploadBusy]=useState(false),[uploadProgress,setUploadProgress]=useState(0);
 const [cropTarget,setCropTarget]=useState<{file:File;kind:'avatar'|'cover'}|null>(null);
+useEffect(()=>{currentChatRef.current={view,to:chatTo}},[view,chatTo]);
+useEffect(()=>{if(!incomingNotice)return;const timer=setTimeout(()=>setIncomingNotice(null),7000);return()=>clearTimeout(timer)},[incomingNotice]);
+useEffect(()=>{
+  setNotificationPrefs(readNotificationPreferences(data.me));
+  const onChange=(event:Event)=>{if((event as CustomEvent<string>).detail===data.me)setNotificationPrefs(readNotificationPreferences(data.me))};
+  const onStorage=(event:StorageEvent)=>{if(event.key==='meuze-notifications-v1-'+data.me)setNotificationPrefs(readNotificationPreferences(data.me))};
+  window.addEventListener('meuze-notification-settings-changed',onChange);
+  window.addEventListener('storage',onStorage);
+  return()=>{window.removeEventListener('meuze-notification-settings-changed',onChange);window.removeEventListener('storage',onStorage)};
+},[data.me]);
+function updateNotificationPrefs(next:NotificationPreferences){
+  setNotificationPrefs(next);
+  saveNotificationPreferences(data.me,next);
+}
 const [draft,setDraft]=useState<Theme>(base),[name,setName]=useState('Novo Zé'),[bio,setBio]=useState('um cantinho da internet com a minha cara.'),[body,setBody]=useState(''),[title,setTitle]=useState(''),[emoji,setEmoji]=useState('✦'),[commentId,setCommentId]=useState(''),[reply,setReply]=useState('');
 async function refresh(){
   const sb=getSupabase();
@@ -101,7 +126,7 @@ async function acceptInvite(){
 async function logout(){
   await getSupabase()?.auth.signOut();
   setAccount(null);setNeedsInvite(false);setDemo(false);setPassword('');
-  setData({me:'',profiles:[],posts:[],likes:[],comments:[]});setView('welcome');setAuthMode('signin');
+  setData({me:'',profiles:[],posts:[],likes:[],comments:[]});setMessages([]);setIncomingNotice(null);setGlobalSoundPanel(false);setView('welcome');setAuthMode('signin');
 }
 useEffect(()=>{if(toast){const t=setTimeout(()=>setToast(''),4000);return()=>clearTimeout(t)}},[toast]);
 const allProfiles=demo?[...data.profiles,...demos]:data.profiles,allPosts=demo?[...data.posts,...demoPosts]:data.posts;
