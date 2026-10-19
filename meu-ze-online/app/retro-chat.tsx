@@ -171,7 +171,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
             <span>{selected?<button type="button" className="zechatnamelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name}>{selected.name}</button>:<strong>Grupo da galera ✳</strong>}<small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> {profiles.length} amigos · sala de todo mundo</>}</small></span>
           </div>
           <div className="zechatroomactions">
-            <button type="button" className="zechatsoundtoggle" onClick={toggleSounds} aria-label={soundsEnabled?'Desativar sons do chat':'Ativar sons do chat'} title={soundsEnabled?'Desativar sons do chat':'Ativar sons do chat'} aria-pressed={soundsEnabled}>{soundsEnabled?<Volume2 size={17}/>:<VolumeX size={17}/>}<span>{soundsEnabled?'Som ligado':'Sem som'}</span></button>
+            <button type="button" className="zechatsoundtoggle" onClick={()=>{setSoundPanel(v=>!v);setSoundScope('chat')}} aria-label="Configurar notificações" aria-expanded={soundPanel}>{notificationPrefs.enabled&&effectiveTone!=='off'?<Volume2 size={17}/>:<VolumeX size={17}/>}<span>Sons</span></button>
             <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
           </div>
         </header>
