@@ -75,3 +75,25 @@
   .zechat-editor{padding:13px;box-shadow:4px 4px 0 #15182a}
 }
 @media(max-width:380px){.zechatsettings span{display:none}.zechatlevels button{font-size:10px}.zechat-editor h2{font-size:19px}}
+
+/* Clickable profiles in chat: separate controls for visiting a profile vs opening a conversation. */
+.zechatpersonrow{display:flex;align-items:center;gap:5px;min-width:0;border-bottom:1px dashed color-mix(in srgb,var(--chat-accent) 25%,transparent);padding:5px 5px}
+.zechatpersonrow.selected{background:color-mix(in srgb,var(--chat-accent) 23%,var(--chat-bg));border-left:4px solid var(--chat-accent);padding-left:1px}
+.zechatpersonrow:hover{background:color-mix(in srgb,var(--chat-accent) 16%,var(--chat-bg))}
+.zechatpeople .zechatpersonrow button{border:0;padding:4px 2px;background:transparent;min-width:0}
+.zechatpeople .zechatpersonrow button:hover{background:transparent}
+.zechatprofilelink{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;cursor:pointer}
+.zechatpeople .zechatpersonrow .zechatprofilelink{width:36px;flex:0 0 36px}
+.zechatpeople .zechatpersonrow .zechatconversationlink{display:flex;flex:1;align-items:center;text-align:left;width:auto}
+.zechatprofilelink:hover .avatar,.zechatprofilelink:focus-visible .avatar{outline:2px solid var(--chat-accent);outline-offset:2px}
+.zechatnamelink{color:var(--chat-ink);font:700 12px Arial,sans-serif;text-align:left;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:2px;cursor:pointer}
+.zechatnamelink:hover,.zechatnamelink:focus-visible{color:var(--chat-accent);text-decoration-color:currentColor}
+.zechatroomtitle .zechatnamelink{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.zechatbubblehead .zechatprofilelink{padding:0}
+.zechatbubblehead .zechatnamelink{font-size:11px}
+@media(max-width:600px){
+  .zechatpersonrow{flex:0 0 auto;min-width:120px;max-width:175px;border-bottom:0;border-right:1px dashed color-mix(in srgb,var(--chat-accent) 25%,transparent);padding:5px}
+  .zechatpersonrow.selected{border-left:0;border-bottom:3px solid var(--chat-accent);padding:5px 5px 2px}
+  .zechatpeople .zechatpersonrow .zechatprofilelink{width:30px;flex-basis:30px}
+  .zechatpeople .zechatpersonrow .zechatconversationlink{width:auto;min-width:0}
+}
