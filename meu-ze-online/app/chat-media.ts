@@ -5,7 +5,8 @@ export type ChatAttachment={type:'image'|'video'|'sticker';url:string;caption?:s
 const prefix='::meuze-media-v1::';
 const mimeExtensions:Record<string,string>={
   'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif',
-  'video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov'
+  'video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov',
+  'audio/mpeg':'mp3','audio/mp4':'m4a','audio/ogg':'ogg'
 };
 const baseUrl=(process.env.NEXT_PUBLIC_SUPABASE_URL||'').replace(/\/$/,'');
 const mediaPrefix=baseUrl+'/storage/v1/object/public/meuze-media/';
@@ -35,11 +36,11 @@ export function encodeChatAttachment(attachment:ChatAttachment):string{
   return prefix+JSON.stringify({type:attachment.type,url:attachment.url,caption:attachment.caption.slice(0,400)});
 }
 
-export async function uploadChatFile(file:File,userId:string,onProgress:(percent:number)=>void):Promise<string>{
+export async function uploadSiteFile(file:File,userId:string,onProgress:(percent:number)=>void=()=>{}):Promise<string>{
   const sb=getSupabase();
   if(!sb)throw Error('Armazenamento indisponível.');
   const ext=mimeExtensions[file.type];
-  if(!ext)throw Error('Use JPG, PNG, WEBP, GIF, MP4, WEBM ou MOV.');
+  if(!ext)throw Error('Formato não aceito. Use imagens, vídeos MP4/WEBM/MOV ou áudio MP3/M4A/OGG.');
   if(!file.size)throw Error('O arquivo está vazio.');
   const {data:{session},error:authError}=await sb.auth.getSession();
   if(authError||!session)throw Error('Sessão expirada. Entre novamente.');
@@ -63,3 +64,5 @@ export async function uploadChatFile(file:File,userId:string,onProgress:(percent
   });
   return sb.storage.from('meuze-media').getPublicUrl(objectName).data.publicUrl;
 }
+
+export const uploadChatFile=uploadSiteFile;
