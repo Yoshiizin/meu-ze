@@ -89,3 +89,18 @@
 .ze-incoming-notice strong{font:700 12px "Courier New",monospace}
 .ze-incoming-notice small{font:11px/1.35 Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:600px){.ze-global-sounds .zesoundpanel{top:60px;right:8px;width:min(340px,calc(100vw - 16px))}.ze-incoming-notice{right:8px;bottom:12px}}
+
+/* Instagram-style swipe refresh, scoped to the feed. No page reload or login flicker. */
+.ze-feed-pull{
+  position:fixed;z-index:14;top:70px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:9px 15px;border:1px solid color-mix(in srgb,var(--ink) 35%,transparent);
+  border-radius:22px;background:var(--card);color:var(--ink);
+  box-shadow:0 5px 16px #0002;pointer-events:none;
+  white-space:nowrap;font:700 12px Arial,sans-serif;
+}
+.ze-feed-pull svg{color:var(--accent)}
+.ze-feed-pull-loading svg{animation:ze-feed-refresh-spin .8s linear infinite}
+@keyframes ze-feed-refresh-spin{to{transform:rotate(360deg)}}
+@media(min-width:651px){.ze-feed-pull{top:92px}}
+@media(prefers-reduced-motion:reduce){.ze-feed-pull-loading svg{animation:none}}
