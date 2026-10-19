@@ -3,7 +3,8 @@ import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from 'r
 import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon, Video, Smile, Paperclip, Volume2, VolumeX} from 'lucide-react';
 import './retro-chat.css';
 import {unlockChatAudio} from './chat-sounds';
-import {readNotificationPreferences,saveNotificationPreferences,playNotificationSound,playSentSound,type NotificationPreferences,type NotificationTone,type ConversationTone} from './chat-notifications';
+import {readNotificationPreferences,saveNotificationPreferences,playSentSound,type NotificationPreferences} from './chat-notifications';
+import ChatSoundSettings from './chat-sound-settings';
 import {encodeChatAttachment,parseChatAttachment,uploadChatFile, type ChatAttachment} from './chat-media';
 
 type Profile = {id:string;name:string;bio:string;theme:string};
@@ -62,9 +63,6 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const [stickerOpen,setStickerOpen]=useState(false);
   const [notificationPrefs,setNotificationPrefs]=useState<NotificationPreferences>(()=>readNotificationPreferences(me));
   const [soundPanel,setSoundPanel]=useState(false);
-  const [soundScope,setSoundScope]=useState<'global'|'chat'>('chat');
-  const [uploadingSound,setUploadingSound]=useState(false);
-  const soundInputRef=useRef<HTMLInputElement>(null);
   const mediaInputRef=useRef<HTMLInputElement>(null);
   const stickerInputRef=useRef<HTMLInputElement>(null);
   const logRef=useRef<HTMLDivElement>(null);
@@ -86,23 +84,6 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   function changeNotifications(next:NotificationPreferences){
     setNotificationPrefs(next);
     saveNotificationPreferences(me,next);
-  }
-  function changeTone(tone:NotificationTone|ConversationTone){
-    if(soundScope==='global')changeNotifications({...notificationPrefs,tone:tone as NotificationTone});
-    else changeNotifications({...notificationPrefs,chats:{...notificationPrefs.chats,[thread]:{...notificationPrefs.chats[thread],tone:tone as ConversationTone}}});
-  }
-  async function uploadSound(file:File|undefined){
-    if(!file)return;
-    if(!['audio/mpeg','audio/mp4','audio/ogg'].includes(file.type)){notify('Escolha um áudio MP3, M4A ou OGG.');return}
-    setUploadingSound(true);
-    try{
-      const url=await uploadMedia(file,'audio');
-      if(url){
-        if(soundScope==='global')changeNotifications({...notificationPrefs,tone:'custom',customUrl:url});
-        else changeNotifications({...notificationPrefs,chats:{...notificationPrefs.chats,[thread]:{tone:'custom',customUrl:url}}});
-        notify('Seu som personalizado está pronto! ✳');
-      }
-    }finally{setUploadingSound(false)}
   }
   async function submitText(){
     unlockChatAudio();
@@ -171,10 +152,11 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
             <span>{selected?<button type="button" className="zechatnamelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name}>{selected.name}</button>:<strong>Grupo da galera ✳</strong>}<small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> {profiles.length} amigos · sala de todo mundo</>}</small></span>
           </div>
           <div className="zechatroomactions">
-            <button type="button" className="zechatsoundtoggle" onClick={()=>{setSoundPanel(v=>!v);setSoundScope('chat')}} aria-label="Configurar notificações" aria-expanded={soundPanel}>{notificationPrefs.enabled&&effectiveTone!=='off'?<Volume2 size={17}/>:<VolumeX size={17}/>}<span>Sons</span></button>
+            <button type="button" className="zechatsoundtoggle" onClick={()=>setSoundPanel(v=>!v)} aria-label="Configurar notificações" aria-expanded={soundPanel}>{notificationPrefs.enabled&&effectiveTone!=='off'?<Volume2 size={17}/>:<VolumeX size={17}/>}<span>Sons</span></button>
             <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
           </div>
         </header>
+        {soundPanel&&<ChatSoundSettings prefs={notificationPrefs} thread={thread} chatName={selected?.name||'Grupo da galera'} onChange={changeNotifications} onClose={()=>setSoundPanel(false)}/>}
         <div ref={logRef} className="zechatlog" aria-live="off" aria-label="Histórico de mensagens">
           {filtered.map(m=>{
             const author=profiles.find(p=>p.id===m.sender);
