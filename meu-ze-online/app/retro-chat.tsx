@@ -12,6 +12,7 @@ type Props = {
   chatText:string; setChatText:(s:string)=>void; sendChat:()=>Promise<void>;
   avatar:(p?:Profile,large?:boolean)=>ReactNode;
   act:(action:Record<string,unknown>)=>Promise<boolean>;
+  uploadMedia:(file:File,kind:'image'|'video'|'audio')=>Promise<string|null>;
 };
 
 const original:ChatTheme = {bg:'#ffffff',ink:'#141414',accent:'#1700b7',sent:'#e9e7ff',received:'#f1f1f1',font:'sans',pattern:'plain',wallpaper:''};
@@ -45,11 +46,12 @@ const colorFields:{key:'bg'|'ink'|'accent'|'sent'|'received';label:string}[]=[
   {key:'sent',label:'Minhas mensagens'},{key:'received',label:'Mensagens recebidas'}
 ];
 
-export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,setChatTo,chatText,setChatText,sendChat,avatar,act}:Props){
+export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,setChatTo,chatText,setChatText,sendChat,avatar,act,uploadMedia}:Props){
   const [editing,setEditing]=useState(false);
   const [level,setLevel]=useState(1);
   const [draft,setDraft]=useState<ChatTheme>(original);
   const [saving,setSaving]=useState(false);
+  const [uploading,setUploading]=useState(false);
   const logRef=useRef<HTMLDivElement>(null);
   const lastChatRef=useRef<string|null>(null);
   const theme=themeOf(mine);
@@ -130,7 +132,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
           <span style={{background:p.theme.accent}}/> {p.name}
         </button>)}</div>
         {level>=2&&<><h3>Escolha suas cores</h3><div className="zechatcolors">{colorFields.map(({key,label})=><label key={key}><input type="color" value={draft[key]} onChange={e=>setDraft(d=>({...d,[key]:e.target.value}))}/>{label}</label>)}</div></>}
-        {level>=3&&<><h3><ImageIcon size={16}/> Fundo personalizado</h3><label className="zechatfield">Link HTTPS de uma imagem ou GIF<input type="url" maxLength={1000} placeholder="https://site.com/fundo.gif" value={draft.wallpaper} onChange={e=>setDraft(d=>({...d,wallpaper:e.target.value}))}/></label><button type="button" className="zechatlink" onClick={()=>setDraft(d=>({...d,wallpaper:''}))}>Remover imagem</button></>}
+        {level>=3&&<><h3><ImageIcon size={16}/> Fundo personalizado</h3><label className="zechatfield">Enviar imagem ou GIF (até 8 MB)<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={uploading} onChange={async e=>{const file=e.target.files?.[0];if(!file)return;setUploading(true);try{const url=await uploadMedia(file,'image');if(url)setDraft(d=>({...d,wallpaper:url}))}finally{setUploading(false);e.target.value=''}}}/></label><label className="zechatfield">Ou colar um link HTTPS<input type="url" maxLength={1000} placeholder="https://site.com/fundo.gif" value={draft.wallpaper} onChange={e=>setDraft(d=>({...d,wallpaper:e.target.value}))}/></label><button type="button" className="zechatlink" onClick={()=>setDraft(d=>({...d,wallpaper:''}))}>Remover imagem</button></>}
         {level>=4&&<div className="zechatoptions"><label>Fonte<select value={draft.font} onChange={e=>setDraft(d=>({...d,font:e.target.value}))}><option value="sans">Clássica</option><option value="serif">Orkut</option><option value="mono">Máquina de escrever</option></select></label><label>Textura<select value={draft.pattern} onChange={e=>setDraft(d=>({...d,pattern:e.target.value}))}><option value="plain">Lisa</option><option value="dots">Pontinhos</option><option value="grid">Quadriculada</option></select></label></div>}
         <div className="zechatpreview" style={{background:draft.bg,color:draft.ink,fontFamily:fonts[draft.font]||fonts.sans}}>
           <strong style={{color:draft.accent}}>✳ Prévia da conversa</strong>
@@ -139,7 +141,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
         </div>
         <div className="zechat-editoractions">
           <button type="button" onClick={()=>{setDraft({...original});setLevel(1)}}><RotateCcw size={15}/> Restaurar</button>
-          <button type="button" className="zechat-save" disabled={saving} onClick={()=>void save()}><Check size={17}/>{saving?'Salvando…':'Salvar minhas cores'}</button>
+          <button type="button" className="zechat-save" disabled={saving||uploading} onClick={()=>void save()}><Check size={17}/>{saving?'Salvando…':'Salvar minhas cores'}</button>
         </div>
       </section>
     </div>}
