@@ -25,8 +25,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 import android.content.pm.PackageManager;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import org.json.JSONObject;
 import android.webkit.URLUtil;
 import android.widget.Button;
@@ -55,7 +53,6 @@ public final class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-        initializeFirebase();
         getWindow().setStatusBarColor(Color.WHITE);
         getWindow().setNavigationBarColor(Color.WHITE);
 
@@ -202,21 +199,6 @@ public final class MainActivity extends Activity {
         } else {
             webView.loadUrl(HOME);
         }
-    }
-
-    private void initializeFirebase(){
-        if(BuildConfig.FCM_APP_ID.isEmpty()||BuildConfig.FCM_API_KEY.isEmpty()||
-           BuildConfig.FCM_SENDER_ID.isEmpty()||BuildConfig.FCM_PROJECT_ID.isEmpty())return;
-        try{
-            if(FirebaseApp.getApps(this).isEmpty()){
-                FirebaseOptions options=new FirebaseOptions.Builder()
-                    .setApplicationId(BuildConfig.FCM_APP_ID)
-                    .setApiKey(BuildConfig.FCM_API_KEY)
-                    .setGcmSenderId(BuildConfig.FCM_SENDER_ID)
-                    .setProjectId(BuildConfig.FCM_PROJECT_ID).build();
-                FirebaseApp.initializeApp(this,options);
-            }
-        }catch(Exception ignored){}
     }
 
     public void sendPushTokenToPage(String token){
