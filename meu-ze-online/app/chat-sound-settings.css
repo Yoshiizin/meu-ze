@@ -14,3 +14,5 @@
 .zesoundfield input{width:100%}
 .zesoundpreview{display:flex;align-items:center;gap:7px;padding:9px 11px;background:#506b49;color:white;font:700 11px Arial,sans-serif}
 .zesoundpanel small{display:block;opacity:.7;margin-top:12px;line-height:1.4}
+
+.zesoundactions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.zesoundactions button{display:inline-flex;align-items:center;gap:6px;padding:9px;border:1px solid #506b49;font:700 11px Arial,sans-serif}.zesoundactions button:disabled{opacity:.5}
