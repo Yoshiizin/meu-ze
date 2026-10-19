@@ -1,6 +1,6 @@
 # 🦕 Ativar notificações Android em segundo plano (FCM)
 
-A versão Android 1.1 tem suporte a pop-ups nativos para mensagens individuais e grupo geral. O som respeita **Geral / Esta conversa**: Fears to Fathom, retrô, áudio MP3/M4A/OGG próprio ou sem som. Para funcionar com o app em segundo plano, é necessário configurar Firebase + servidor; o APK 1.0 antigo **não** tem receptor nativo de push.
+A versão Android 2.0 tem suporte a pop-ups nativos para mensagens individuais e grupo geral. O som respeita **Geral / Esta conversa**: Fears to Fathom, retrô, áudio MP3/M4A/OGG próprio ou sem som. Para funcionar com o app em segundo plano, é necessário configurar Firebase + servidor; o APK 1.0 antigo **não** tem receptor nativo de push.
 
 ## 1. Firebase (projeto gratuito)
 
@@ -38,11 +38,11 @@ Mantenha as variáveis `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_K
 
 **Segurança:** o JSON da conta de serviço e a chave service_role jamais devem ser adicionados ao código, README ou APK.
 
-## 5. Publicar APK 1.1
+## 5. Publicar APK 2.0
 
-Com os quatro segredos GitHub definidos, vá em [Actions > Meu Zé Android APK](https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml) > **Run workflow** na branch `main`. O pipeline publica **Meu-Ze.apk** na [aba Releases](https://github.com/Yoshiizin/meu-ze/releases) com tag `android-v1.1.0`. Sem esses segredos, ele só gera um APK de desenvolvimento **sem push habilitado** e não publica a versão 1.1.
+Com os quatro segredos GitHub definidos, vá em [Actions > Meu Zé Android APK](https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml) > **Run workflow** na branch `main`. O pipeline publica **Meu-Ze.apk** na [aba Releases](https://github.com/Yoshiizin/meu-ze/releases) com tag `android-v2.0.0`. Sem esses segredos, ele só gera um APK de desenvolvimento **sem push habilitado** e não publica a versão 2.0.
 
-**Importante:** o APK de teste é assinado com chave de debug temporária do GitHub Actions. Para instalar o APK 1.1 pode ser necessário desinstalar o APK 1.0; isso apaga as preferências locais do aplicativo, mas não a conta nem as mensagens armazenadas no Supabase. Para próximas atualizações sem desinstalação, configure uma chave de assinatura de release persistente.
+**Importante:** o APK de teste é assinado com chave de debug temporária do GitHub Actions. Para instalar o APK 2.0 pode ser necessário desinstalar o APK 1.0; isso apaga as preferências locais do aplicativo, mas não a conta nem as mensagens armazenadas no Supabase. Para próximas atualizações sem desinstalação, configure uma chave de assinatura de release persistente.
 
 ## 6. Testar no Android
 
