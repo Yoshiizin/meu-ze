@@ -11,7 +11,7 @@ on:
       - 'android/**'
       - '.github/workflows/android-apk.yml'
 permissions:
-  contents: read
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -36,6 +36,23 @@ jobs:
           gradle-version: '8.10.2'
       - name: Build installable APK
         run: gradle --no-daemon assembleDebug
+      - name: Prepare direct-download APK
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: cp app/build/outputs/apk/debug/app-debug.apk ../Meu-Ze.apk
+      - name: Publish APK on GitHub Releases
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view android-v1.0.0 >/dev/null 2>&1; then
+            echo "Release android-v1.0.0 already exists. Not overwriting signed APK."
+          else
+            gh release create android-v1.0.0 Meu-Ze.apk \
+              --title "Meu Zé para Android v1.0.0 (teste)" \
+              --notes "APK de teste do Meu Zé, com ícone do dinossaurinho. Instale no Android 10 ou superior. O iPhone usa https://meu-ze.vercel.app/ pelo Safari > Adicionar à Tela de Início. Este APK é assinado com chave de teste, portanto futuras versões podem exigir reinstalação." \
+              --latest
+          fi
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
