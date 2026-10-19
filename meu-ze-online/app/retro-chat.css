@@ -1,0 +1,77 @@
+/* Chat only: nostalgic Orkut / MSN styling. No global app layout changes. */
+.zechat{display:grid;grid-template-columns:180px minmax(0,1fr);min-height:500px;max-height:680px;border:1px solid var(--chat-accent);background:var(--chat-bg);color:var(--chat-ink);font-size:13px;overflow:hidden;box-shadow:3px 3px 0 color-mix(in srgb,var(--chat-accent) 18%,transparent)}
+.zechatpeople{min-width:0;border-right:1px solid color-mix(in srgb,var(--chat-accent) 35%,transparent);background:color-mix(in srgb,var(--chat-accent) 8%,var(--chat-bg));overflow:auto;padding:0 0 10px}
+.zechatpeople-title{background:var(--chat-accent);color:#fff;padding:11px 10px;font:700 11px Arial,sans-serif;letter-spacing:.6px}
+.zechatpeople button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;padding:10px 8px;border-bottom:1px dashed color-mix(in srgb,var(--chat-accent) 25%,transparent);font:12px Arial,sans-serif;min-width:0}
+.zechatpeople button.selected{background:color-mix(in srgb,var(--chat-accent) 23%,var(--chat-bg));border-left:4px solid var(--chat-accent);padding-left:4px;font-weight:700}
+.zechatpeople button:hover{background:color-mix(in srgb,var(--chat-accent) 16%,var(--chat-bg))}
+.zechatpersonname{min-width:0;display:grid;gap:3px;flex:1}
+.zechatpersonname strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zechatpersonname small{font-size:10px;opacity:.72;white-space:nowrap}
+.zechat .avatar{flex:0 0 29px;width:29px;height:29px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
+.zechat .avatar img{width:100%;height:100%;object-fit:cover}
+.zechatgeneral{width:29px;height:29px;flex:0 0 29px;display:grid;place-items:center;background:var(--chat-accent);color:white;border:1px solid color-mix(in srgb,var(--chat-accent) 75%,#000)}
+.zechatroom{min-width:0;min-height:0;display:flex;flex-direction:column;background-color:var(--chat-bg);background-image:var(--chat-wallpaper);background-size:cover;background-position:center}
+.zechat-pattern-dots .zechatroom{background-image:var(--chat-wallpaper),radial-gradient(color-mix(in srgb,var(--chat-accent) 16%,transparent) 1px,transparent 1px);background-size:cover,12px 12px}
+.zechat-pattern-grid .zechatroom{background-image:var(--chat-wallpaper),linear-gradient(color-mix(in srgb,var(--chat-accent) 12%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--chat-accent) 12%,transparent) 1px,transparent 1px);background-size:cover,20px 20px,20px 20px}
+.zechatroomhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 11px;border-bottom:2px solid var(--chat-accent);background:var(--chat-bg);min-height:59px}
+.zechatroomtitle{display:flex;align-items:center;gap:8px;min-width:0}
+.zechatroomtitle>span:last-child{display:grid;gap:3px;min-width:0}
+.zechatroomtitle strong{font:700 13px Arial,sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zechatroomtitle small{display:flex;gap:4px;align-items:center;font:10px Arial,sans-serif;opacity:.78}
+.zechatsettings{border:1px solid var(--chat-accent);color:var(--chat-accent);display:flex;align-items:center;gap:6px;padding:8px;font:700 11px Arial,sans-serif;white-space:nowrap}
+.zechatlog{flex:1;min-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:16px 12px;overscroll-behavior:contain}
+.zechatbubble{width:fit-content;max-width:85%;min-width:115px;background:var(--chat-received);color:var(--chat-ink);border:1px solid color-mix(in srgb,var(--chat-ink) 18%,transparent);padding:8px 10px;box-shadow:2px 2px 0 color-mix(in srgb,var(--chat-ink) 8%,transparent);overflow-wrap:anywhere}
+.zechatbubble.mine{align-self:flex-end;background:var(--chat-sent);border-left:3px solid var(--chat-accent)}
+.zechatbubble.received{align-self:flex-start;border-left:3px solid color-mix(in srgb,var(--chat-ink) 40%,transparent)}
+.zechatbubblehead{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.zechatbubblehead .avatar{width:22px;height:22px;flex-basis:22px;font-size:11px}
+.zechatbubblehead strong{font:700 11px Arial,sans-serif}
+.zechatbubble p{margin:0;white-space:pre-wrap;font:inherit;line-height:1.5}
+.zechatbubble small{display:block;text-align:right;font:10px Arial,sans-serif;opacity:.7;margin-top:6px}
+.zechatempty{font:italic 13px Georgia,serif;opacity:.78;text-align:center;margin:auto}
+.zechatinput{display:flex;align-items:stretch;gap:8px;background:var(--chat-bg);border-top:1px solid color-mix(in srgb,var(--chat-accent) 40%,transparent);padding:10px}
+.zechatinput input{flex:1;min-width:0;background:#fff;color:#222;border:1px solid color-mix(in srgb,var(--chat-accent) 45%,#aaa);border-radius:0;padding:10px;font:13px Arial,sans-serif}
+.zechat-send{display:grid;place-items:center;flex:0 0 40px;background:var(--chat-accent);color:#fff}
+.zechat-send:disabled{opacity:.5}
+.zechat-overlay{position:fixed;inset:0;background:#0009;display:grid;place-items:center;padding:15px;z-index:80}
+.zechat-editor{width:min(100%,570px);max-height:calc(100dvh - 30px);overflow:auto;background:#f5f4ee;color:#242537;border:2px solid #4d6d9c;box-shadow:8px 8px 0 #15182a;padding:18px;font:13px Arial,sans-serif}
+.zechat-editor>header{display:flex;align-items:start;justify-content:space-between;gap:12px;border-bottom:2px solid #4d6d9c;padding-bottom:12px}
+.zechat-editor>header small{font-size:10px;color:#57719a;font-weight:700}
+.zechat-editor h2{font:800 22px Arial,sans-serif;margin:5px 0 0}
+.zechat-editor h3{font:700 12px Arial,sans-serif;margin:18px 0 9px;display:flex;gap:6px;align-items:center}
+.zechat-editor p{font:13px/1.5 Georgia,serif}
+.zechatlevels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:16px}
+.zechatlevels button{padding:9px 3px;border:1px solid #b5c4d8;background:#e5ecf5;font:700 11px Arial,sans-serif}
+.zechatlevels button.active{background:#4d6d9c;color:white;border-color:#4d6d9c}
+.zechatthemes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.zechatthemes button{border:2px solid;text-align:left;padding:10px;min-height:50px;font:700 12px Arial,sans-serif}
+.zechatthemes button span{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-right:5px;border:1px solid #888}
+.zechatcolors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.zechatcolors label{display:flex;align-items:center;gap:8px;font:12px Arial,sans-serif}
+.zechatcolors input{width:40px;height:30px;border:1px solid #aaa;padding:0;flex:0 0 40px;cursor:pointer}
+.zechatfield{display:grid;gap:7px;font-size:12px}
+.zechatfield input,.zechatoptions select{width:100%;min-width:0;padding:10px;background:white;color:#222;border:1px solid #9daec6;border-radius:0}
+.zechatlink{color:#345f99;text-decoration:underline;margin-top:8px}
+.zechatoptions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.zechatoptions label{display:grid;gap:6px;font-size:12px}
+.zechatpreview{border:1px dashed #9ba3ae;margin:18px 0;padding:12px;display:flex;flex-direction:column;gap:9px;min-height:145px}
+.zechatpreview>div{padding:10px;max-width:85%;border:1px solid #0002}
+.zechat-editoractions{display:flex;gap:8px;justify-content:space-between;align-items:center}
+.zechat-editoractions button{display:flex;align-items:center;gap:7px;border:1px solid #536c91;padding:11px;font:700 12px Arial,sans-serif}
+.zechat-editoractions .zechat-save{background:#4d6d9c;color:white}
+.zechat-editoractions button:disabled{opacity:.5}
+@media(max-width:600px){
+  .zechat{display:flex;flex-direction:column;min-height:550px;max-height:calc(100dvh - 220px);overflow:hidden}
+  .zechatpeople{display:flex;flex:0 0 auto;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid var(--chat-accent);padding:0;align-items:stretch}
+  .zechatpeople-title{display:none}
+  .zechatpeople button{width:auto;min-width:110px;max-width:165px;flex:0 0 auto;border-bottom:0;border-right:1px dashed color-mix(in srgb,var(--chat-accent) 25%,transparent);padding:9px}
+  .zechatpeople button.selected{border-left:0;border-bottom:3px solid var(--chat-accent);padding:9px 9px 6px}
+  .zechatpersonname small{font-size:9px}
+  .zechatroom{flex:1;min-height:0}
+  .zechatlog{min-height:180px}
+  .zechatbubble{max-width:91%}
+  .zechatroomhead{min-height:55px}
+  .zechat-editor{padding:13px;box-shadow:4px 4px 0 #15182a}
+}
+@media(max-width:380px){.zechatsettings span{display:none}.zechatlevels button{font-size:10px}.zechat-editor h2{font-size:19px}}
