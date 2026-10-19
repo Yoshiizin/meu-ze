@@ -77,9 +77,11 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const effectiveTone=threadChoice==='default'?notificationPrefs.tone:threadChoice;
   useEffect(()=>{setNotificationPrefs(readNotificationPreferences(me))},[me]);
   useEffect(()=>{
-    const onStorage=(event:StorageEvent)=>{if(event.key?.startsWith('meuze-notifications-v1-'))setNotificationPrefs(readNotificationPreferences(me))};
+    const onStorage=(event:StorageEvent)=>{if(event.key==='meuze-notifications-v1-'+me)setNotificationPrefs(readNotificationPreferences(me))};
+    const onChange=(event:Event)=>{if((event as CustomEvent<string>).detail===me)setNotificationPrefs(readNotificationPreferences(me))};
     window.addEventListener('storage',onStorage);
-    return()=>window.removeEventListener('storage',onStorage);
+    window.addEventListener('meuze-notification-settings-changed',onChange);
+    return()=>{window.removeEventListener('storage',onStorage);window.removeEventListener('meuze-notification-settings-changed',onChange)};
   },[me]);
   function changeNotifications(next:NotificationPreferences){
     setNotificationPrefs(next);
