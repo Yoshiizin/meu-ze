@@ -1,5 +1,5 @@
 'use client';
-import {useState,useEffect,useRef,type CSSProperties} from 'react';
+import {useState,useEffect,useRef,type CSSProperties,type TouchEvent as ReactTouchEvent} from 'react';
 import {getSupabase, configured} from '../lib/supabase';
 import RetroChat from './retro-chat';
 import ChatSoundSettings from './chat-sound-settings';
@@ -10,7 +10,7 @@ import ProfilePlayer from './profile-player';
 import MediaCropper from './media-cropper';
 import {uploadSiteFile} from './chat-media';
 import type {User} from '@supabase/supabase-js';
-import {Home,Users,Search,Plus,Heart,MessageCircle,ArrowUpRight,ArrowLeft,Palette,X,Image as ImageIcon,Pin,Music,Check,Trash2,Lock,SlidersHorizontal,Bookmark,Send,Video,Bell} from 'lucide-react';
+import {Home,Users,Search,Plus,Heart,MessageCircle,ArrowUpRight,ArrowLeft,Palette,X,Image as ImageIcon,Pin,Music,Check,Trash2,Lock,SlidersHorizontal,Bookmark,Send,Video,Bell,RefreshCw} from 'lucide-react';
 type Theme={wallpaper?:string;bg:string;ink:string;accent:string;card:string;font:string;pattern:string;radius:number;avatar:string;cover:string;song:string;songName:string;favorites:string;sticker:string;layout:string;pinned:string[]};
 type Profile={id:string;name:string;bio:string;theme:string};
 type Post={media?:{url:string;type:string}[];id:string;author:string;body:string;title:string;emoji:string;scene:string;image:string;created:number};
@@ -36,6 +36,54 @@ const [view,setView]=useState('welcome'),[profileId,setProfileId]=useState(''),[
 const [account,setAccount]=useState<User|null>(null),[needsInvite,setNeedsInvite]=useState(false),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[inviteCode,setInviteCode]=useState(''),[authMode,setAuthMode]=useState<'signin'|'signup'|'forgot'|'reset'>('signin'),[authBusy,setAuthBusy]=useState(false);
 const [chatTo,setChatTo]=useState<string|null>(null),[chatText,setChatText]=useState(''),[messages,setMessages]=useState<{id:string;sender:string;recipient:string|null;body:string;created_at:string}[]>([]),[chatReady,setChatReady]=useState(false),[postMedia,setPostMedia]=useState<{url:string;type:string}[]>([]),[uploadBusy,setUploadBusy]=useState(false),[uploadProgress,setUploadProgress]=useState(0);
 const [cropTarget,setCropTarget]=useState<{file:File;kind:'avatar'|'cover'}|null>(null);
+// Pull-to-refresh is handled inside the site, so existing Android APKs receive it automatically.
+const pullStartRef=useRef<number|null>(null);
+const pullDistanceRef=useRef(0);
+const pullRefreshingRef=useRef(false);
+const [pullDistance,setPullDistance]=useState(0);
+const [pullRefreshing,setPullRefreshing]=useState(false);
+function resetPull(){
+  pullStartRef.current=null;
+  pullDistanceRef.current=0;
+  setPullDistance(0);
+}
+function onFeedTouchStart(event:ReactTouchEvent<HTMLDivElement>){
+  resetPull();
+  if(view!=='feed'||modal||!data.me||pullRefreshingRef.current||event.touches.length!==1)return;
+  if(window.scrollY>2||(document.scrollingElement?.scrollTop||0)>2)return;
+  // Do not intercept gestures from independently scrolling widgets.
+  for(let element=event.target instanceof Element?event.target:null;element&&element!==document.body;element=element.parentElement){
+    if(element.scrollTop>2)return;
+  }
+  pullStartRef.current=event.touches[0].clientY;
+}
+function onFeedTouchMove(event:ReactTouchEvent<HTMLDivElement>){
+  if(pullStartRef.current===null||event.touches.length!==1)return;
+  if(window.scrollY>2||(document.scrollingElement?.scrollTop||0)>2){resetPull();return}
+  const delta=event.touches[0].clientY-pullStartRef.current;
+  const distance=delta>0?Math.min(100,delta*0.55):0;
+  pullDistanceRef.current=distance;
+  setPullDistance(distance);
+}
+async function refreshByPull(){
+  if(pullRefreshingRef.current)return;
+  pullRefreshingRef.current=true;
+  setPullRefreshing(true);
+  const started=Date.now();
+  try{
+    await refresh(); // Fetches the latest posts without reloading the page or logging out.
+  }finally{
+    await new Promise(resolve=>setTimeout(resolve,Math.max(0,450-(Date.now()-started))));
+    pullRefreshingRef.current=false;
+    setPullRefreshing(false);
+  }
+}
+function onFeedTouchEnd(){
+  const shouldRefresh=pullDistanceRef.current>=64;
+  resetPull();
+  if(shouldRefresh)void refreshByPull();
+}
+useEffect(()=>{if(view!=='feed')resetPull()},[view]);
 useEffect(()=>{currentChatRef.current={view,to:chatTo}},[view,chatTo]);
 useEffect(()=>{if(!incomingNotice)return;const timer=setTimeout(()=>setIncomingNotice(null),7000);return()=>clearTimeout(timer)},[incomingNotice]);
 useEffect(()=>{
@@ -237,7 +285,8 @@ if(!account || needsInvite || authMode==='reset')return <div className="authscre
   <p className="authfoot">Sem algoritmo. Só os seus amigos. ✳</p>
 </section></div>;
 return <div className={'app pattern-'+shownTheme.pattern} style={css}><aside className="sidebar"><a className="logo" href="/" aria-label="Meu Zé início">meu zé<span>✳</span></a><p className="tagline">a internet é nossa.</p><div className="groupbadge"><Lock size={12}/> nosso círculo privado</div><nav>{nav.map(([id,Icon,label])=><button key={id} className={view===id?'active':''} onClick={()=>{setView(id);setScene('geral')}}><Icon size={21}/>{label}{id==='feed'&&<span>✦</span>}</button>)}</nav><button className="primary newpost" onClick={()=>setModal('post')}><Plus size={19}/> Solta um Zé</button><div className="sidebottom"><button className="signout" onClick={logout}>Sair da conta ↗</button><div className="doodle">✳<span>gente de verdade.<br/>gosto duvidoso.<br/>amizade boa.</span></div><button className="person" onClick={()=>openProfile(data.me)}>{avatar(mine)}<span><strong>{mine?.name||'Meu perfil'}</strong><small>seu pequeno universo ↗</small></span></button></div></aside>
-<div className="mainwrap" onPointerDown={unlockChatAudio} onKeyDown={unlockChatAudio}><header className="topbar"><span className="mobilelogo">meu zé ✳</span><span className="desktoplabel">UM CANTINHO SÓ NOSSO</span><div><button type="button" title="Configurar notificações" aria-label="Configurar notificações" aria-expanded={globalSoundPanel} onClick={()=>setGlobalSoundPanel(v=>!v)}><Bell size={20}/></button><button className="toplogout" onClick={logout} title="Sair da conta">Sair</button><button aria-label="Buscar" onClick={()=>document.getElementById('search')?.focus()}><Search size={20}/></button><button aria-label="Personalizar" onClick={customize}><Palette size={21}/></button><button onClick={()=>openProfile(data.me)}>{avatar(mine)}</button></div></header><div className="columns"><main>
+<div className="mainwrap" onPointerDown={unlockChatAudio} onKeyDown={unlockChatAudio} onTouchStart={onFeedTouchStart} onTouchMove={onFeedTouchMove} onTouchEnd={onFeedTouchEnd} onTouchCancel={resetPull}>
+{view==='feed'&&(pullDistance>8||pullRefreshing)&&<div className={'ze-feed-pull'+(pullRefreshing?' ze-feed-pull-loading':'')} role="status" aria-live="polite"><RefreshCw size={17}/><span>{pullRefreshing?'Atualizando o feed…':pullDistance>=64?'Solte para atualizar':'Puxe para atualizar'}</span></div>}<header className="topbar"><span className="mobilelogo">meu zé ✳</span><span className="desktoplabel">UM CANTINHO SÓ NOSSO</span><div><button type="button" title="Configurar notificações" aria-label="Configurar notificações" aria-expanded={globalSoundPanel} onClick={()=>setGlobalSoundPanel(v=>!v)}><Bell size={20}/></button><button className="toplogout" onClick={logout} title="Sair da conta">Sair</button><button aria-label="Buscar" onClick={()=>document.getElementById('search')?.focus()}><Search size={20}/></button><button aria-label="Personalizar" onClick={customize}><Palette size={21}/></button><button onClick={()=>openProfile(data.me)}>{avatar(mine)}</button></div></header><div className="columns"><main>
 {connection&&<div className="notice">{connection} {!data.me&&<button onClick={()=>setView('login')}>Entrar ↗</button>}<button onClick={refresh}>Tentar novamente</button></div>}
 {view==='chat'?<RetroChat me={data.me} mine={mine} profiles={allProfiles} messages={messages} chatReady={chatReady} chatTo={chatTo} setChatTo={setChatTo} chatText={chatText} setChatText={setChatText} sendChat={sendChat} avatar={avatar} act={act} uploadMedia={uploadMedia} openProfile={openProfile} notify={notify}/>:view==='profile'?<><button className="back" onClick={()=>setView('feed')}><ArrowLeft size={17}/> voltar para a galera</button><section className="profilecard"><div className="cover" style={safeImage(shownTheme.cover)?{backgroundImage:'url('+safeImage(shownTheme.cover)+')'}:{}}><span>{shownTheme.sticker}</span></div><div className="profileinfo">{avatar(owner,true)}{profileId!==data.me&&<button className="outline editprofile" onClick={()=>openChat(profileId)}><MessageCircle size={15}/> Enviar mensagem</button>}{profileId===data.me&&<button className="outline editprofile" onClick={customize}><SlidersHorizontal size={15}/> Personalizar</button>}<h1>{owner?.name||'Seu nome aqui'}</h1><p>{owner?.bio||'Tudo que você gosta, do seu jeito.'}</p><small>{list.length} publicações · {profileId===data.me?'seu universo':'você está vendo o tema deste perfil'}</small></div>{shownTheme.song&&/^https:\/\//.test(shownTheme.song)&&<ProfilePlayer key={profileId+'-'+shownTheme.song} src={shownTheme.song} title={shownTheme.songName}/>} <div className="favorites"><small>PEQUENAS OBSESSÕES</small>{shownTheme.favorites.split('\n').filter(Boolean).map((f,i)=><span key={i}>{f}</span>)}</div></section><h3 className="sectiontitle">PUBLICAÇÕES <span>FAVORITOS ★</span></h3></>:view==='friends'?<><div className="heading"><small>BOA COMPANHIA</small><h1>A nossa galera<span>☺</span></h1><p>Cada pessoa, um pequeno universo.</p></div><div className="notice"><Lock size={16}/> O grupo permanece privado. Para liberar amigos, é preciso adicionar os e-mails deles ao acesso do site.</div><div className="friendgrid">{allProfiles.map(p=><button className="friendcard" key={p.id} onClick={()=>openProfile(p.id)} style={{background:parse(p).bg,color:parse(p).ink}}><div className="friendart">{parse(p).sticker}</div>{avatar(p,true)}<h2>{p.name}</h2><p>{p.bio}</p><span>visitar esse universo ↗</span></button>)}</div>{!allProfiles.length&&<div className="empty">A galera começa com você. <button onClick={customize}>Criar meu perfil</button></div>}</>:view==='scenes'?<><div className="heading"><small>AS NOSSAS CONVERSAS</small><h1>Nossos cantos<span>✧</span></h1><p>Um lugar pra cada obsessão coletiva.</p></div><div className="scenegrid">{scenes.map(([id,icon,label])=><button key={id} onClick={()=>{setScene(id);setView('feed')}}><span>{icon}</span><h2>{label}</h2><small>{allPosts.filter(p=>id==='geral'||p.scene===id).length} publicações</small><ArrowUpRight/></button>)}</div></>:<><section className="welcome"><div><span className="eyebrow">MENOS ALGORITMO. MAIS AMIGO.</span><h1>{view==='saved'?'Coisas que ficaram.':'E aí, meu zé.'}</h1><p>{view==='saved'?'Tudo que você curtiu, guardadinho aqui.':'O que tá fazendo a sua cabeça hoje?'}</p></div><span className="sunflower">✳<i>☺</i></span></section>{view==='feed'&&<><button className="composer" onClick={()=>setModal('post')}>{avatar(mine)}<span>Um pensamento, um achado, qualquer coisa...</span><span className="composeplus"><Plus size={22}/></span></button><div className="filterrow">{scenes.map(([id,icon,label])=><button key={id} className={scene===id?'selected':''} onClick={()=>setScene(id)}>{icon} {label}</button>)}</div><div className="feedtitle"><h3>{scene==='geral'?'Fresco da galera':scenes.find(s=>s[0]===scene)?.[2]}</h3><span>ordem cronológica ↓</span></div></>}</>}
 {!['friends','scenes','chat'].includes(view)&&<><div className="searchbox"><Search size={16}/><input id="search" placeholder="Procurar um achado ou uma pessoa" value={search} onChange={e=>setSearch(e.target.value)}/></div>{demo&&<div className="demobar">Modo inspiração · perfis e posts fictícios <button onClick={()=>setDemo(false)}>sair ×</button></div>}<div className={shownTheme.layout==='grid'&&view==='profile'?'postsgrid':''}>{list.map(postCard)}</div>{!list.length&&<div className="empty"><span>✳</span><h2>{loaded?'Toda boa história começa com um oi.':'Chegando no nosso cantinho…'}</h2><p>{search?'Nenhum achado por aqui. Tente outra busca.':'O círculo está começando. Seja o primeiro a compartilhar alguma coisa.'}</p><button className="primary" onClick={()=>setModal('post')}>Fazer a primeira publicação</button><button className="textbutton" onClick={()=>{setDemo(true);setView('feed')}}>Ver como fica com a galera ↗</button></div>}</>}
