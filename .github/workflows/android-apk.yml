@@ -45,7 +45,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && env.FCM_APP_ID != '' && env.FCM_API_KEY != '' && env.FCM_SENDER_ID != '' && env.FCM_PROJECT_ID != ''
         run: cp app/build/outputs/apk/debug/app-debug.apk ../Meu-Ze.apk
       - name: Publish APK on GitHub Releases
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && env.FCM_APP_ID != '' && env.FCM_API_KEY != '' && env.FCM_SENDER_ID != '' && env.FCM_PROJECT_ID != ''
         working-directory: .
         env:
           GH_TOKEN: ${{ github.token }}
