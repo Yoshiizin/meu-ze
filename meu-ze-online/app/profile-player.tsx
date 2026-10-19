@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import {ArrowUpRight,Music2,Pause,Play,Volume2,VolumeX} from 'lucide-react';
 import './profile-player.css';
 
@@ -55,7 +55,7 @@ export default function ProfilePlayer({src,title}:Props){
           onError={()=>{setError(true);setPlaying(false)}}/>
         <button type="button" className="zeplayer-play" onClick={()=>void toggle()} aria-label={playing?'Pausar música':'Tocar música'} title={playing?'Pausar':'Reproduzir'}>{playing?<Pause size={17} fill="currentColor"/>:<Play size={17} fill="currentColor"/>}</button>
         <span className="zeplayer-time">{fmt(current)}</span>
-        <input className="zeplayer-seek" type="range" min={0} max={duration||100} step={0.1} value={Math.min(current,duration||100)} onChange={e=>seek(Number(e.target.value))} aria-label="Posição da música" style={{'--zeplayer-progress':(duration?Math.min(100,current/duration*100):0)+'%'} as React.CSSProperties}/>
+        <input className="zeplayer-seek" type="range" min={0} max={duration||100} step={0.1} value={Math.min(current,duration||100)} onChange={e=>seek(Number(e.target.value))} aria-label="Posição da música" style={{'--zeplayer-progress':(duration?Math.min(100,current/duration*100):0)+'%'} as CSSProperties}/>
         <span className="zeplayer-time">{duration?fmt(duration):'--:--'}</span>
         <button type="button" className="zeplayer-volume-button" onClick={toggleMute} aria-label={muted?'Ativar som':'Silenciar'} title={muted?'Ativar som':'Silenciar'}>{muted||volume===0?<VolumeX size={16}/>:<Volume2 size={16}/>}</button>
         <input className="zeplayer-volume" type="range" min={0} max={1} step={0.05} value={muted?0:volume} onChange={e=>changeVolume(Number(e.target.value))} aria-label="Volume"/>
