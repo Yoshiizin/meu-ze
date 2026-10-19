@@ -2,7 +2,7 @@ name: Meu Zé Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [main, android-app-pwa]
+    branches: [main, android-app-pwa, android-background-push]
     paths:
       - 'android/**'
       - '.github/workflows/android-apk.yml'
@@ -16,6 +16,11 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      FCM_APP_ID: ${{ secrets.FCM_APP_ID }}
+      FCM_API_KEY: ${{ secrets.FCM_API_KEY }}
+      FCM_SENDER_ID: ${{ secrets.FCM_SENDER_ID }}
+      FCM_PROJECT_ID: ${{ secrets.FCM_PROJECT_ID }}
     defaults:
       run:
         working-directory: android
@@ -37,20 +42,20 @@ jobs:
       - name: Build installable APK
         run: gradle --no-daemon assembleDebug
       - name: Prepare direct-download APK
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && env.FCM_APP_ID != '' && env.FCM_API_KEY != '' && env.FCM_SENDER_ID != '' && env.FCM_PROJECT_ID != ''
         run: cp app/build/outputs/apk/debug/app-debug.apk ../Meu-Ze.apk
       - name: Publish APK on GitHub Releases
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && env.FCM_APP_ID != '' && env.FCM_API_KEY != '' && env.FCM_SENDER_ID != '' && env.FCM_PROJECT_ID != ''
         working-directory: .
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view android-v1.0.0 >/dev/null 2>&1; then
-            echo "Release android-v1.0.0 already exists. Not overwriting signed APK."
+          if gh release view android-v1.1.0 >/dev/null 2>&1; then
+            echo "Release android-v1.1.0 already exists. Not overwriting signed APK."
           else
-            gh release create android-v1.0.0 Meu-Ze.apk \
-              --title "Meu Zé para Android v1.0.0 (teste)" \
-              --notes "APK de teste do Meu Zé, com ícone do dinossaurinho. Instale no Android 10 ou superior. O iPhone usa https://meu-ze.vercel.app/ pelo Safari > Adicionar à Tela de Início. Este APK é assinado com chave de teste, portanto futuras versões podem exigir reinstalação." \
+            gh release create android-v1.1.0 Meu-Ze.apk \
+              --title "Meu Zé para Android v1.1.0 (teste)" \
+              --notes "APK de teste do Meu Zé, com ícone do dinossaurinho. Instale no Android 10 ou superior. O iPhone usa https://meu-ze.vercel.app/ pelo Safari > Adicionar à Tela de Início. Este APK inclui integração Firebase FCM para notificações pop-up com sons por conversa. Configure as variáveis Firebase no GitHub e as credenciais do servidor na Vercel. APK de teste: futuras versões podem exigir reinstalação." \
               --latest
           fi
       - name: Upload APK

@@ -6,6 +6,7 @@ import ChatSoundSettings from './chat-sound-settings';
 import {readNotificationPreferences,saveNotificationPreferences,playNotificationSound,threadId,resolvedSound,type NotificationPreferences} from './chat-notifications';
 import {parseChatAttachment} from './chat-media';
 import {unlockChatAudio} from './chat-sounds';
+import {unregisterNativeToken} from './native-push';
 import ProfilePlayer from './profile-player';
 import MediaCropper from './media-cropper';
 import {uploadSiteFile} from './chat-media';
@@ -84,6 +85,25 @@ function onFeedTouchEnd(){
   if(shouldRefresh)void refreshByPull();
 }
 useEffect(()=>{if(view!=='feed')resetPull()},[view]);
+useEffect(()=>{
+  function openFromPush(event:Event){
+    const thread=(event as CustomEvent<string>).detail;
+    if(typeof thread!=='string'||!/^general$|^[0-9a-f-]{36}$/i.test(thread))return;
+    if(!data.me){
+      window.localStorage.setItem('meuze-open-chat-pending',thread);
+      return;
+    }
+    window.localStorage.removeItem('meuze-open-chat-pending');
+    setChatTo(thread==='general'?null:thread);
+    setView('chat');
+  }
+  window.addEventListener('meuze-open-chat',openFromPush);
+  if(data.me){
+    const pending=window.localStorage.getItem('meuze-open-chat-pending');
+    if(pending)openFromPush(new CustomEvent('meuze-open-chat',{detail:pending}));
+  }
+  return()=>window.removeEventListener('meuze-open-chat',openFromPush);
+},[data.me]);
 useEffect(()=>{currentChatRef.current={view,to:chatTo}},[view,chatTo]);
 useEffect(()=>{if(!incomingNotice)return;const timer=setTimeout(()=>setIncomingNotice(null),7000);return()=>clearTimeout(timer)},[incomingNotice]);
 useEffect(()=>{
@@ -172,6 +192,7 @@ async function acceptInvite(){
   finally{setAuthBusy(false)}
 }
 async function logout(){
+  await unregisterNativeToken(data.me);
   await getSupabase()?.auth.signOut();
   setAccount(null);setNeedsInvite(false);setDemo(false);setPassword('');
   setData({me:'',profiles:[],posts:[],likes:[],comments:[]});setMessages([]);setIncomingNotice(null);setGlobalSoundPanel(false);setView('welcome');setAuthMode('signin');
@@ -234,7 +255,25 @@ useEffect(()=>{
   const timer=setInterval(()=>void loadChat(),5000);
   return()=>clearInterval(timer);
 },[data.me]);
-async function sendChat(payload?:string):Promise<boolean>{const sb=getSupabase();const content=(payload??chatText).trim();if(!sb||!content||!data.me)return false;const {error}=await sb.from('chat_messages').insert({sender:data.me,recipient:chatTo,body:content.slice(0,2000)});if(error){notify('Não foi possível enviar a mensagem. Tente novamente.');return false}if(payload===undefined)setChatText('');await loadChat();return true}
+async function sendChat(payload?:string):Promise<boolean>{
+  const sb=getSupabase(),content=(payload??chatText).trim();
+  if(!sb||!content||!data.me)return false;
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){notify('Sua sessão expirou. Entre novamente.');return false}
+    const res=await fetch('/api/chat/send',{
+      method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
+      body:JSON.stringify({recipient:chatTo,body:content.slice(0,2000)})
+    });
+    if(!res.ok)throw Error('Falha ao enviar mensagem.');
+    if(payload===undefined)setChatText('');
+    await loadChat();
+    return true;
+  }catch{
+    notify('Não foi possível enviar a mensagem. Tente novamente.');
+    return false;
+  }
+}
 async function uploadMedia(file:File,kind:'image'|'video'|'audio'){
   if(!data.me)return null;
   const allowed=kind==='image'?['image/jpeg','image/png','image/webp','image/gif']:kind==='video'?['video/mp4','video/webm','video/quicktime']:['audio/mpeg','audio/mp4','audio/ogg'];

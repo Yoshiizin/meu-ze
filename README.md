@@ -17,6 +17,7 @@ Abra **[meu-ze.vercel.app](https://meu-ze.vercel.app)** no Safari → **Comparti
 ## 🔧 Desenvolvimento
 - Site: [meu-ze-online](./meu-ze-online)
 - Projeto Android e instruções: [android/README.md](./android/README.md)
+- Configuração de notificações push Android: [android/PUSH-SETUP.md](./android/PUSH-SETUP.md)
 - Compilações de APK: [GitHub Actions](https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml)
 
-**Observação:** notificações em segundo plano no Android ainda precisam de integração nativa; o APK precisa de internet para acessar o site.
+**Observação:** o suporte FCM a notificações em segundo plano está preparado na versão Android 1.1, mas precisa de configuração Firebase + Vercel + Supabase e de um novo APK. O APK precisa de internet para acessar o site.

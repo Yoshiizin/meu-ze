@@ -23,6 +23,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.JavascriptInterface;
+import android.content.pm.PackageManager;
+import org.json.JSONObject;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -35,6 +38,7 @@ public final class MainActivity extends Activity {
     private static final String HOME = "https://meu-ze.vercel.app/";
     private static final String TRUSTED_HOST = "meu-ze.vercel.app";
     private static final int FILE_CHOOSER_REQUEST = 781;
+    public static volatile boolean isForeground = false;
 
     private WebView webView;
     private FrameLayout root;
@@ -83,6 +87,7 @@ public final class MainActivity extends Activity {
         webView.setBackgroundColor(Color.WHITE);
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+        webView.addJavascriptInterface(new PushBridge(this,webView),"MeuZeAndroid");
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -110,6 +115,8 @@ public final class MainActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 if (!mainFrameFailed) loadingView.setVisibility(View.GONE);
                 CookieManager.getInstance().flush();
+                sendPushTokenToPage(getSharedPreferences("meuze_push",MODE_PRIVATE).getString("token",""));
+                openPendingChat();
             }
 
             @Override
@@ -191,6 +198,50 @@ public final class MainActivity extends Activity {
             if (webView.getUrl() == null) webView.loadUrl(HOME);
         } else {
             webView.loadUrl(HOME);
+        }
+    }
+
+    public void sendPushTokenToPage(String token){
+        if(token==null||token.isEmpty()||webView==null)return;
+        Uri url=Uri.parse(webView.getUrl()==null?"":webView.getUrl());
+        if(!"https".equals(url.getScheme())||!TRUSTED_HOST.equals(url.getHost()))return;
+        runOnUiThread(()->webView.evaluateJavascript(
+            "window.dispatchEvent(new CustomEvent('meuze-native-push-token',{detail:"+
+            JSONObject.quote(token)+"}));",null));
+    }
+    private void openPendingChat(){
+        String thread=getIntent().getStringExtra("thread");
+        if(thread==null||!thread.matches("general|[0-9a-fA-F-]{36}")||webView==null||webView.getUrl()==null)return;
+        getIntent().removeExtra("thread");
+        webView.evaluateJavascript("localStorage.setItem('meuze-open-chat-pending',"+JSONObject.quote(thread)+");"+
+            "window.dispatchEvent(new CustomEvent('meuze-open-chat',{detail:"+JSONObject.quote(thread)+"}));",null);
+    }
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if(webView!=null)openPendingChat();
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        isForeground=true;
+        if(webView!=null){
+            webView.onResume();
+            sendPushTokenToPage(getSharedPreferences("meuze_push",MODE_PRIVATE).getString("token",""));
+        }
+    }
+    @Override
+    protected void onPause(){
+        isForeground=false;
+        if(webView!=null)webView.onPause();
+        super.onPause();
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] grantResults){
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        if(requestCode==1119&&grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED&&webView!=null){
+            new PushBridge(this,webView).refreshToken();
         }
     }
 

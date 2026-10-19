@@ -16,6 +16,10 @@ Se o link da versão mais recente ainda não estiver disponível, a compilação
 
 É um APK de teste assinado com chave de debug gerada pelo runner. Para atualizar com outro build, pode ser necessário desinstalar a versão anterior. Desinstalar apaga apenas dados locais do app, não a conta ou mensagens no Supabase. Para distribuir atualizações estáveis, crie e guarde uma chave de assinatura de release privada; não a comite no GitHub.
 
+## Notificações Android em segundo plano
+
+[**Como ativar pop-ups e sons personalizados com Firebase**](./PUSH-SETUP.md)
+
 ## Android Studio
 Abra a pasta `android/` (JDK 17, Gradle 8.10.2, Android SDK 35), execute `assembleDebug` e encontre o APK em `app/build/outputs/apk/debug/app-debug.apk`.
 
@@ -25,6 +29,6 @@ Abra https://meu-ze.vercel.app/ no Safari e escolha **Compartilhar > Adicionar �
 ## Limitações
 - Internet necessária para feed e chat.
 - Mídias são escolhidas pelo seletor de arquivos Android.
-- Notificações push quando o aplicativo está fechado ainda precisam de integração nativa (FCM). Sons da página dependem do app aberto.
+- A versão 1.1 inclui suporte nativo a notificações FCM, mas exige configurar Firebase, Supabase e Vercel. Veja [PUSH-SETUP.md](./PUSH-SETUP.md). A versão 1.0 não recebe push em segundo plano.
 - APK é exclusivo do Android. Não se instala no iPhone.
 - Nunca embuta chaves privadas ou credenciais do Supabase no app.
