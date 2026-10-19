@@ -32,19 +32,20 @@ function tone(at:number,freq:number,endFreq:number,duration:number,volume:number
   oscillator.stop(at+duration+0.015);
 }
 
-export function playChatCue(kind:'sent'|'received'){
-  if(!context||context.state!=='running')return;
+export function playChatCue(kind:'sent'|'received',volume=1){
+  if(!context||context.state!=='running'||volume<=0)return;
   try{
     const now=context.currentTime+0.008;
+    const level=Math.max(0,Math.min(1,volume));
     if(kind==='received'){
       // Soft, eerie two-note incoming-message chime.
-      tone(now,740,700,0.18,0.055,'sine');
-      tone(now+0.12,554,500,0.32,0.042,'triangle');
-      tone(now+0.24,370,330,0.29,0.016,'sine');
+      tone(now,740,700,0.18,0.055*level,'sine');
+      tone(now+0.12,554,500,0.32,0.042*level,'triangle');
+      tone(now+0.24,370,330,0.29,0.016*level,'sine');
     }else{
       // Short, muted confirmation click.
-      tone(now,490,350,0.075,0.029,'triangle');
-      tone(now+0.065,650,570,0.095,0.018,'sine');
+      tone(now,490,350,0.075,0.029*level,'triangle');
+      tone(now+0.065,650,570,0.095,0.018*level,'sine');
     }
   }catch{/* Never interrupt messages for an audio error. */}
 }
