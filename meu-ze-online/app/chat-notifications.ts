@@ -7,6 +7,7 @@ export type ConversationSound={tone:ConversationTone;customUrl?:string};
 export type NotificationPreferences={
   enabled:boolean;
   desktop:boolean;
+  pushEnabled:boolean;
   tone:NotificationTone;
   volume:number;
   customUrl:string;
@@ -14,7 +15,7 @@ export type NotificationPreferences={
 };
 
 export const defaultNotificationPreferences:NotificationPreferences={
-  enabled:true,desktop:false,tone:'fears',volume:80,customUrl:'',chats:{}
+  enabled:true,desktop:false,pushEnabled:false,tone:'fears',volume:80,customUrl:'',chats:{}
 };
 const storageKey=(user:string)=>'meuze-notifications-v1-'+user;
 const safeAudioUrl=(value:unknown):string=>typeof value==='string'&&/^https:\/\/[^\s<>"']{1,1900}$/.test(value)?value:'';
@@ -37,6 +38,7 @@ export function readNotificationPreferences(user:string):NotificationPreferences
     return {
       enabled:parsed.enabled!==false,
       desktop:parsed.desktop===true,
+      pushEnabled:parsed.pushEnabled===true,
       tone:tones.includes(parsed.tone)?parsed.tone:'fears',
       volume:Number.isFinite(parsed.volume)?Math.max(0,Math.min(100,parsed.volume)):80,
       customUrl:safeAudioUrl(parsed.customUrl),
@@ -47,7 +49,7 @@ export function readNotificationPreferences(user:string):NotificationPreferences
 
 export function saveNotificationPreferences(user:string,prefs:NotificationPreferences){
   if(typeof window==='undefined'||!user)return;
-  try{window.localStorage.setItem(storageKey(user),JSON.stringify(prefs));window.dispatchEvent(new CustomEvent('meuze-notification-settings-changed',{detail:user}))}catch{}
+  try{window.localStorage.setItem(storageKey(user),JSON.stringify(prefs));window.MeuZeAndroid?.syncSettings(user,JSON.stringify(prefs));window.dispatchEvent(new CustomEvent('meuze-notification-settings-changed',{detail:user}));window.MeuZeAndroid?.refreshToken()}catch{}
 }
 
 export function threadId(sender:string,recipient:string|null,me:string):string{
