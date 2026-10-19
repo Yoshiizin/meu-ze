@@ -1,0 +1,56 @@
+/* Profile soundtrack: early-internet cassette deck, inherited per-profile palette. */
+.zeplayer{display:flex;align-items:center;gap:13px;min-width:0;margin:17px 0 19px;padding:12px 13px;background:color-mix(in srgb,var(--accent) 7%,var(--card));color:var(--ink);border:1px solid color-mix(in srgb,var(--accent) 48%,transparent);box-shadow:3px 3px 0 color-mix(in srgb,var(--accent) 16%,transparent);font-family:Arial,sans-serif;position:relative}
+.zeplayer:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.zeplayer-art{width:54px;height:60px;flex:0 0 54px;display:flex;align-items:center;justify-content:center;position:relative;background:color-mix(in srgb,var(--accent) 15%,var(--bg));border:1px dashed color-mix(in srgb,var(--accent) 70%,transparent);color:var(--accent)}
+.zeplayer-art span{position:absolute;right:4px;top:3px;font:13px Georgia,serif}
+.zeplayer-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:6px}
+.zeplayer-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.zeplayer-label{font:700 9px/1.2 "Courier New",monospace;letter-spacing:1px;color:var(--accent);display:inline-flex;align-items:center;gap:5px}
+.zeplayer-led{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 16%,transparent)}
+.zeplayer-playing .zeplayer-led{animation:zeplayer-blink 1.5s ease-in-out infinite}
+.zeplayer-tag{font:8px/1.2 "Courier New",monospace;opacity:.6;letter-spacing:.5px}
+.zeplayer-name{font:700 12px/1.35 "Courier New",monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.zeplayer-controls{display:flex;align-items:center;gap:9px;min-width:0;margin-top:3px}
+.zeplayer button{appearance:none;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.zeplayer-play{width:30px;height:30px;flex:0 0 30px;color:var(--bg);background:var(--accent);border:1px solid var(--accent)!important;transition:transform .12s,filter .12s}
+.zeplayer-play:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.zeplayer-time{font:10px "Courier New",monospace;white-space:nowrap;font-variant-numeric:tabular-nums;opacity:.78}
+.zeplayer input[type=range]{appearance:none;-webkit-appearance:none;border:0;outline-offset:4px;cursor:pointer;height:16px;background:transparent;padding:0;margin:0;min-width:0}
+.zeplayer-seek{flex:1}
+.zeplayer input[type=range]::-webkit-slider-runnable-track{height:4px;background:color-mix(in srgb,var(--accent) 28%,var(--bg));border-radius:0}
+.zeplayer .zeplayer-seek::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--accent) var(--zeplayer-progress,0%),color-mix(in srgb,var(--accent) 28%,var(--bg)) var(--zeplayer-progress,0%))}
+.zeplayer input[type=range]::-moz-range-track{height:4px;background:color-mix(in srgb,var(--accent) 28%,var(--bg))}
+.zeplayer .zeplayer-seek::-moz-range-progress{height:4px;background:var(--accent)}
+.zeplayer input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:10px;height:10px;background:var(--accent);border:2px solid var(--bg);outline:1px solid var(--accent);margin-top:-3px;border-radius:0}
+.zeplayer input[type=range]::-moz-range-thumb{width:8px;height:8px;background:var(--accent);border:2px solid var(--bg);border-radius:0}
+.zeplayer-volume-button{width:23px;height:25px;flex:0 0 23px;color:var(--accent);background:transparent}
+.zeplayer-volume{width:48px;flex:0 0 48px}
+.zeplayer-eq{display:flex;align-items:flex-end;gap:3px;height:30px;flex:0 0 auto;align-self:center}
+.zeplayer-eq i{display:block;width:3px;height:8px;background:var(--accent);opacity:.65;transform-origin:bottom}
+.zeplayer-eq i:nth-child(2){height:17px}
+.zeplayer-eq i:nth-child(3){height:24px}
+.zeplayer-eq i:nth-child(4){height:13px}
+.zeplayer-eq i:nth-child(5){height:19px}
+.zeplayer-playing .zeplayer-eq i{animation:zeplayer-eq 680ms ease-in-out infinite alternate}
+.zeplayer-playing .zeplayer-eq i:nth-child(2){animation-delay:160ms}
+.zeplayer-playing .zeplayer-eq i:nth-child(3){animation-delay:340ms}
+.zeplayer-playing .zeplayer-eq i:nth-child(4){animation-delay:100ms}
+.zeplayer-playing .zeplayer-eq i:nth-child(5){animation-delay:230ms}
+.zeplayer-external{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:7px 9px;border:1px dashed var(--accent);font:700 10px "Courier New",monospace;color:var(--accent);text-decoration:none;margin-top:3px}
+.zeplayer-external:hover{background:color-mix(in srgb,var(--accent) 14%,var(--bg))}
+.zeplayer-error{font:10px Arial,sans-serif;color:#c84b3b;margin:0}
+@keyframes zeplayer-eq{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+@keyframes zeplayer-blink{50%{opacity:.35}}
+@media(max-width:600px){
+ .zeplayer{gap:9px;padding:10px}
+ .zeplayer-art{width:43px;height:54px;flex-basis:43px}
+ .zeplayer-eq{display:none}
+ .zeplayer-controls{gap:6px}
+ .zeplayer-volume{width:32px;flex-basis:32px}
+ .zeplayer-tag{display:none}
+}
+@media(max-width:380px){
+ .zeplayer-art{display:none}
+ .zeplayer-volume,.zeplayer-volume-button{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){.zeplayer-playing .zeplayer-eq i,.zeplayer-playing .zeplayer-led{animation:none}}
