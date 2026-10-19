@@ -71,3 +71,21 @@
 .signout{display:block;font:11px Arial,sans-serif;text-align:left;text-decoration:underline;margin-bottom:20px}
 .toplogout{font:12px Arial,sans-serif;text-decoration:underline}
 @media(max-width:600px){.authcard{padding:25px;box-shadow:7px 7px 0 #050322}.authcard h1{font-size:49px}}
+
+/* Profile photo/banner previews and resumable upload progress, isolated to editor. */
+.editor .zeprofile-mini-avatar{display:block;width:76px;height:76px;object-fit:cover;aspect-ratio:1;border:2px solid var(--accent);margin:8px 0}
+.editor .zeprofile-mini-banner{display:block;width:100%;max-width:260px;aspect-ratio:4/1;object-fit:cover;border:1px dashed var(--accent);margin:8px 0}
+.zeupload-status{position:fixed;z-index:125;bottom:20px;right:20px;width:min(330px,calc(100vw - 32px));background:#f8f6ed;color:#273427;border:2px solid #273427;box-shadow:4px 4px 0 #0007;padding:13px;display:grid;gap:8px;font:12px Arial,sans-serif}
+.zeupload-status strong{font:700 12px "Courier New",monospace}
+.zeupload-status progress{width:100%;height:10px;accent-color:#607a37}
+.zeupload-status small{font:11px Georgia,serif;opacity:.7}
+
+/* Notifications use the site's retro-paper look without affecting the feed layout. */
+.ze-global-sounds .zesoundpanel{position:fixed;top:70px;right:16px;left:auto;z-index:130;width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 88px);overflow-y:auto}
+.ze-incoming-notice{position:fixed;right:18px;bottom:22px;z-index:115;display:flex;align-items:center;gap:11px;width:min(340px,calc(100vw - 32px));padding:13px;background:#f8f6ed;color:#243224;border:2px solid #607c58;box-shadow:4px 4px 0 #0005;text-align:left;font:12px Arial,sans-serif;cursor:pointer}
+.ze-incoming-notice:hover{background:#f0f4e9}
+.ze-incoming-symbol{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;background:#607c58;color:#fff;font:19px Georgia,serif}
+.ze-incoming-notice>span:nth-child(2){min-width:0;flex:1;display:grid;gap:4px}
+.ze-incoming-notice strong{font:700 12px "Courier New",monospace}
+.ze-incoming-notice small{font:11px/1.35 Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){.ze-global-sounds .zesoundpanel{top:60px;right:8px;width:min(340px,calc(100vw - 16px))}.ze-incoming-notice{right:8px;bottom:12px}}

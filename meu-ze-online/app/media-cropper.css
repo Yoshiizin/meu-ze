@@ -1,0 +1,29 @@
+/* Cropping workspace follows the flat, nostalgic Meu Zé design. */
+.zecrop-overlay{position:fixed;inset:0;z-index:110;background:#080b0bdd;display:flex;align-items:center;justify-content:center;padding:15px;overflow-y:auto}
+.zecrop-dialog{width:min(100%,650px);max-height:calc(100dvh - 30px);overflow-y:auto;background:#f8f6ed;color:#202820;border:2px solid #2e382e;box-shadow:7px 7px 0 #0008;padding:18px;font-family:Arial,sans-serif}
+.zecrop-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px dashed #b5bdac;padding-bottom:11px}
+.zecrop-head small{font:700 10px "Courier New",monospace;color:#657c36;letter-spacing:.8px}
+.zecrop-head h2{font:900 22px Arial,sans-serif;margin:6px 0 0}
+.zecrop-head button{display:grid;place-items:center;padding:5px}
+.zecrop-description{font:12px/1.5 Georgia,serif;margin:13px 0}
+.zecrop-stage{display:flex;align-items:center;justify-content:center;overflow:hidden;background-color:#d6dccf;background-image:linear-gradient(45deg,#cbd1c5 25%,transparent 25%),linear-gradient(-45deg,#cbd1c5 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#cbd1c5 75%),linear-gradient(-45deg,transparent 75%,#cbd1c5 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;border:2px solid #343c34;margin:0 auto}
+.zecrop-stage canvas{display:block;width:100%;height:100%;object-fit:fill}
+.zecrop-stage-avatar{width:min(100%,310px);aspect-ratio:1/1}
+.zecrop-stage-cover{width:100%;aspect-ratio:4/1}
+.zecrop-stage span{font:12px "Courier New",monospace}
+.zecrop-controls{display:grid;gap:12px;margin:18px 0}
+.zecrop-controls label{display:grid;grid-template-columns:105px minmax(0,1fr) 45px;align-items:center;gap:12px;font:11px Arial,sans-serif}
+.zecrop-controls label>span{display:flex;align-items:center;gap:5px;font-weight:700}
+.zecrop-controls input{width:100%;accent-color:#647b38}
+.zecrop-controls strong{font:11px "Courier New",monospace;text-align:right}
+.zecrop-note{border-top:1px dashed #b5bdac;padding-top:10px;font:11px/1.4 Georgia,serif;opacity:.7}
+.zecrop-error{color:#ad3535;font:12px Arial,sans-serif}
+.zecrop-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-top:17px}
+.zecrop-actions button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;font:700 11px Arial,sans-serif;border:1px solid #a6b0a0}
+.zecrop-actions .zecrop-reset{margin-right:auto}
+.zecrop-actions .zecrop-save{background:#2e382e;color:#fff;border-color:#2e382e}
+.zecrop-actions button:disabled{opacity:.5}
+@media(max-width:480px){.zecrop-dialog{padding:12px;box-shadow:3px 3px 0 #0008}.zecrop-head h2{font-size:19px}.zecrop-controls label{grid-template-columns:90px minmax(0,1fr) 38px;gap:6px}.zecrop-actions{gap:6px}.zecrop-actions button{padding:9px 8px;font-size:10px}}
+
+.zecrop-stage{cursor:grab;touch-action:none;user-select:none}
+.zecrop-stage:active{cursor:grabbing}
