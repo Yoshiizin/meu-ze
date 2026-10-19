@@ -1,7 +1,8 @@
 'use client';
 import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from 'react';
-import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon, Video, Smile, Paperclip} from 'lucide-react';
+import {Check, Palette, Send, X, RotateCcw, Lock, Users, Image as ImageIcon, Video, Smile, Paperclip, Volume2, VolumeX} from 'lucide-react';
 import './retro-chat.css';
+import {playChatCue,unlockChatAudio} from './chat-sounds';
 import {encodeChatAttachment,parseChatAttachment,uploadChatFile, type ChatAttachment} from './chat-media';
 
 type Profile = {id:string;name:string;bio:string;theme:string};
@@ -58,6 +59,9 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const [chatUploading,setChatUploading]=useState(false);
   const [chatProgress,setChatProgress]=useState(0);
   const [stickerOpen,setStickerOpen]=useState(false);
+  const [soundsEnabled,setSoundsEnabled]=useState(true);
+  const seenMessagesRef=useRef<Set<string>>(new Set());
+  const soundInitializedRef=useRef(false);
   const mediaInputRef=useRef<HTMLInputElement>(null);
   const stickerInputRef=useRef<HTMLInputElement>(null);
   const logRef=useRef<HTMLDivElement>(null);
@@ -67,6 +71,43 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   const stickers=Array.from(new Set(messages.map(m=>parseChatAttachment(m.body)).filter((a):a is ChatAttachment=>Boolean(a&&a.type==='sticker')).map(a=>a.url))).reverse().slice(0,40);
   const filtered=messages.filter(m=>chatTo===null?m.recipient===null:
     (m.sender===me&&m.recipient===chatTo)||(m.sender===chatTo&&m.recipient===me));
+  useEffect(()=>{
+    try{setSoundsEnabled(window.localStorage.getItem('meuze-chat-sounds')!=='off')}catch{}
+  },[]);
+  useEffect(()=>{
+    if(!chatReady)return;
+    const seen=seenMessagesRef.current;
+    if(!soundInitializedRef.current){
+      messages.forEach(m=>seen.add(m.id));
+      soundInitializedRef.current=true;
+      return;
+    }
+    let hasIncoming=false;
+    for(const m of messages){
+      if(!seen.has(m.id)){
+        seen.add(m.id);
+        if(m.sender!==me)hasIncoming=true;
+      }
+    }
+    // The message feed is bounded to 300 entries; keep the seen set bounded too.
+    if(seen.size>650){
+      const live=new Set(messages.map(m=>m.id));
+      seen.clear();
+      live.forEach(id=>seen.add(id));
+    }
+    if(hasIncoming&&soundsEnabled)playChatCue('received');
+  },[messages,chatReady,me,soundsEnabled]);
+  function toggleSounds(){
+    const next=!soundsEnabled;
+    setSoundsEnabled(next);
+    try{window.localStorage.setItem('meuze-chat-sounds',next?'on':'off')}catch{}
+    if(next){unlockChatAudio();playChatCue('received')}
+  }
+  async function submitText(){
+    unlockChatAudio();
+    const sent=await sendChat();
+    if(sent&&soundsEnabled)playChatCue('sent');
+  }
   useEffect(()=>{
     const el=logRef.current;
     if(!el)return;
@@ -82,8 +123,9 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
     fontFamily:fonts[theme.font]||fonts.sans
   } as CSSProperties;
   async function sendAttachment(attachment:ChatAttachment){
+    unlockChatAudio();
     const sent=await sendChat(encodeChatAttachment(attachment));
-    if(sent)setStickerOpen(false);
+    if(sent){setStickerOpen(false);if(soundsEnabled)playChatCue('sent')}
     return sent;
   }
   async function attachFile(file:File|undefined,sticker:boolean){
@@ -107,7 +149,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
   }
   return <>
     <div className="heading"><small>O NOSSO MSN PARTICULAR</small><h1>Chat da galera <span>✉</span></h1><p>Conversa geral ou só entre vocês.</p></div>
-    <section className={'zechat zechat-pattern-'+theme.pattern} style={chatStyle} aria-label="Chat do Meu Zé">
+    <section className={'zechat zechat-pattern-'+theme.pattern} style={chatStyle} aria-label="Chat do Meu Zé" onPointerDown={unlockChatAudio} onKeyDown={unlockChatAudio}>
       <nav className="zechatpeople" aria-label="Conversas">
         <div className="zechatpeople-title">✳ CONVERSAS</div>
         <button type="button" className={chatTo===null?'selected':''} aria-current={chatTo===null?'page':undefined} onClick={()=>setChatTo(null)}>
@@ -127,7 +169,10 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
             {selected?<button type="button" className="zechatprofilelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name} aria-label={'Visitar perfil de '+selected.name}>{avatar(selected)}</button>:<span className="zechatgeneral"><Users size={18}/></span>}
             <span>{selected?<button type="button" className="zechatnamelink" onClick={()=>openProfile(selected.id)} title={'Visitar perfil de '+selected.name}>{selected.name}</button>:<strong>Grupo da galera ✳</strong>}<small>{chatTo?<><Lock size={11}/> Conversa particular</>:<><Users size={11}/> {profiles.length} amigos · sala de todo mundo</>}</small></span>
           </div>
-          <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
+          <div className="zechatroomactions">
+            <button type="button" className="zechatsoundtoggle" onClick={toggleSounds} aria-label={soundsEnabled?'Desativar sons do chat':'Ativar sons do chat'} title={soundsEnabled?'Desativar sons do chat':'Ativar sons do chat'} aria-pressed={soundsEnabled}>{soundsEnabled?<Volume2 size={17}/>:<VolumeX size={17}/>}<span>{soundsEnabled?'Som ligado':'Sem som'}</span></button>
+            <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
+          </div>
         </header>
         <div ref={logRef} className="zechatlog" aria-live="off" aria-label="Histórico de mensagens">
           {filtered.map(m=>{
@@ -151,7 +196,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
           <button type="button" className="zechat-addsticker" disabled={chatUploading} onClick={()=>stickerInputRef.current?.click()}><ImageIcon size={15}/> Adicionar figurinha</button>
         </div>}
         {chatUploading&&<div className="zechat-uploadprogress" role="status"><span>Enviando arquivo… {chatProgress}%</span><progress max={100} value={chatProgress}/></div>}
-        <form className="zechatinput" onSubmit={e=>{e.preventDefault();void sendChat()}}>
+        <form className="zechatinput" onSubmit={e=>{e.preventDefault();void submitText()}}>
           <input ref={mediaInputRef} type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" onChange={e=>{const f=e.target.files?.[0];e.target.value='';void attachFile(f,false)}}/>
           <input ref={stickerInputRef} type="file" hidden accept="image/png,image/webp,image/gif" onChange={e=>{const f=e.target.files?.[0];e.target.value='';void attachFile(f,true)}}/>
           <button type="button" className="zechat-attach" disabled={chatUploading} title="Enviar foto ou vídeo" aria-label="Enviar foto ou vídeo" onClick={()=>mediaInputRef.current?.click()}><Paperclip size={19}/></button>
