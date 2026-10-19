@@ -71,3 +71,11 @@
 .signout{display:block;font:11px Arial,sans-serif;text-align:left;text-decoration:underline;margin-bottom:20px}
 .toplogout{font:12px Arial,sans-serif;text-decoration:underline}
 @media(max-width:600px){.authcard{padding:25px;box-shadow:7px 7px 0 #050322}.authcard h1{font-size:49px}}
+
+/* Profile photo/banner previews and resumable upload progress, isolated to editor. */
+.editor .zeprofile-mini-avatar{display:block;width:76px;height:76px;object-fit:cover;aspect-ratio:1;border:2px solid var(--accent);margin:8px 0}
+.editor .zeprofile-mini-banner{display:block;width:100%;max-width:260px;aspect-ratio:4/1;object-fit:cover;border:1px dashed var(--accent);margin:8px 0}
+.zeupload-status{position:fixed;z-index:125;bottom:20px;right:20px;width:min(330px,calc(100vw - 32px));background:#f8f6ed;color:#273427;border:2px solid #273427;box-shadow:4px 4px 0 #0007;padding:13px;display:grid;gap:8px;font:12px Arial,sans-serif}
+.zeupload-status strong{font:700 12px "Courier New",monospace}
+.zeupload-status progress{width:100%;height:10px;accent-color:#607a37}
+.zeupload-status small{font:11px Georgia,serif;opacity:.7}
