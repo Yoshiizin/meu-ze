@@ -1,4 +1,4 @@
-import {authenticate,errorResponse,noStore,notifyChatRecipients,sameOrigin} from '../../push/_lib';
+import {authenticate,adminDb,errorResponse,noStore,notifyChatRecipients,sameOrigin} from '../../push/_lib';
 
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -13,8 +13,11 @@ export async function POST(req:Request){
   if(!body)return errorResponse('Mensagem vazia.',400);
   if(recipient!==null&&(typeof recipient!=='string'||!/^[0-9a-f-]{36}$/i.test(recipient)))return errorResponse('Destinatário inválido.',400);
   if(recipient===auth.userId)return errorResponse('Destinatário inválido.',400);
-  if(recipient){
-    const {data:member,error}=await auth.db.from('members').select('user_id').eq('user_id',recipient).maybeSingle();
+  // Members can only read their own membership under RLS. Use service role for
+  // optional recipient validation, and otherwise rely on the existing insert policy.
+  const admin=adminDb();
+  if(recipient&&admin){
+    const {data:member,error}=await admin.from('members').select('user_id').eq('user_id',recipient).maybeSingle();
     if(error||!member)return errorResponse('Destinatário não encontrado.',404);
   }
   const {data:inserted,error}=await auth.db.from('chat_messages')
