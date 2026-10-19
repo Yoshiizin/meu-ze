@@ -4,6 +4,7 @@ import {Bell,MessageCircle,X} from 'lucide-react';
 import {getSupabase} from '../lib/supabase';
 import {playNotificationSound,readNotificationPreferences,threadId} from './chat-notifications';
 import {unlockChatAudio} from './chat-sounds';
+import {nativePushAvailable,registerNativeToken,syncNativeSettings} from './native-push';
 import './chat-notifier.css';
 
 type Message={id:string;sender:string;recipient:string|null;body:string};
@@ -13,6 +14,30 @@ export default function ChatNotifier(){
   const userRef=useRef('');
   const seenRef=useRef<Set<string>|null>(null);
   const busyRef=useRef(false);
+  useEffect(()=>{
+    const sb=getSupabase();
+    if(!sb)return;
+    let active=true;
+    async function sync(){
+      if(!active||!nativePushAvailable())return;
+      const {data:{session}}=await sb!.auth.getSession();
+      if(!active||!session)return;
+      syncNativeSettings(session.user.id,readNotificationPreferences(session.user.id));
+      window.MeuZeAndroid?.refreshToken();
+    }
+    async function onToken(event:Event){
+      if(!active)return;
+      const token=(event as CustomEvent<string>).detail;
+      const {data:{session}}=await sb!.auth.getSession();
+      if(active&&session&&typeof token==='string')await registerNativeToken(session.user.id,token);
+    }
+    const onPrefs=()=>{void sync()};
+    window.addEventListener('meuze-native-push-token',onToken);
+    window.addEventListener('meuze-notification-settings-changed',onPrefs);
+    const {data:{subscription}}=sb.auth.onAuthStateChange(()=>queueMicrotask(()=>void sync()));
+    void sync();
+    return()=>{active=false;subscription.unsubscribe();window.removeEventListener('meuze-native-push-token',onToken);window.removeEventListener('meuze-notification-settings-changed',onPrefs)};
+  },[]);
   useEffect(()=>{
     let active=true;
     const sb=getSupabase();
