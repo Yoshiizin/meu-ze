@@ -165,7 +165,7 @@ export default function RetroChat({me,mine,profiles,messages,chatReady,chatTo,se
             <button type="button" className="zechatsettings" onClick={openEditor} aria-label="Personalizar cores do chat"><Palette size={17}/><span>Cores</span></button>
           </div>
         </header>
-        {soundPanel&&<ChatSoundSettings prefs={notificationPrefs} thread={thread} chatName={selected?.name||'Grupo da galera'} onChange={changeNotifications} onClose={()=>setSoundPanel(false)}/>}
+        {soundPanel&&<ChatSoundSettings prefs={notificationPrefs} thread={thread} chatName={selected?.name||'Grupo da galera'} onChange={changeNotifications} onClose={()=>setSoundPanel(false)} uploadMedia={uploadMedia} notify={notify}/>}
         <div ref={logRef} className="zechatlog" aria-live="off" aria-label="Histórico de mensagens">
           {filtered.map(m=>{
             const author=profiles.find(p=>p.id===m.sender);
