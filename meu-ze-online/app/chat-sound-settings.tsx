@@ -1,5 +1,6 @@
 'use client';
-import {useRef,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
+import {nativePushAvailable} from './native-push';
 import {Paperclip,Volume2,X} from 'lucide-react';
 import {playNotificationSound,type NotificationPreferences,type NotificationTone,type ConversationTone} from './chat-notifications';
 import {unlockChatAudio} from './chat-sounds';
@@ -8,6 +9,8 @@ type Props={prefs:NotificationPreferences;thread:string;chatName:string;initialS
 export default function ChatSoundSettings({prefs,thread,chatName,initialScope='chat',onChange,onClose,uploadMedia,notify}:Props){
  const [scope,setScope]=useState<'global'|'chat'>(initialScope);
  const [uploading,setUploading]=useState(false);
+ const [nativeAvailable,setNativeAvailable]=useState(false);
+ useEffect(()=>setNativeAvailable(nativePushAvailable()),[]);
  const fileRef=useRef<HTMLInputElement>(null);
  const selected=prefs.chats[thread]?.tone||'default';
  function changeTone(tone:NotificationTone|ConversationTone){
@@ -43,7 +46,13 @@ export default function ChatSoundSettings({prefs,thread,chatName,initialScope='c
    <button className={scope==='chat'?'active':''} onClick={()=>setScope('chat')}>✉ Esta conversa</button>
   </div>
   <label className="zesoundcheck"><input type="checkbox" checked={prefs.enabled} onChange={e=>onChange({...prefs,enabled:e.target.checked})}/> Ativar notificações sonoras</label>
-  <label className="zesoundcheck"><input type="checkbox" checked={prefs.desktop} onChange={e=>{void changeDesktop(e.target.checked)}}/> Avisos do navegador quando a aba estiver em segundo plano</label>
+  <label className="zesoundcheck"><input type="checkbox" checked={prefs.desktop} onChange={e=>{void changeDesktop(e.target.checked)}}/> Avisos do navegador (somente com o site aberto)</label>
+  {nativeAvailable&&<label className="zesoundcheck"><input type="checkbox" checked={prefs.pushEnabled} onChange={e=>{
+    const enabled=e.target.checked;
+    onChange({...prefs,pushEnabled:enabled});
+    if(enabled)window.MeuZeAndroid?.requestNotifications();
+    else window.MeuZeAndroid?.refreshToken();
+  }}/> Pop-ups do Android mesmo com o app em segundo plano</label>}
   <label className="zesoundfield">Som
    <select value={scope==='global'?prefs.tone:selected} onChange={e=>changeTone(e.target.value as NotificationTone|ConversationTone)}>
     {scope==='chat'&&<option value="default">Usar som geral</option>}
@@ -58,6 +67,6 @@ export default function ChatSoundSettings({prefs,thread,chatName,initialScope='c
    <button type="button" disabled={uploading} onClick={()=>fileRef.current?.click()}><Paperclip size={14}/>{uploading?'Enviando…':'Enviar meu som'}</button>
    <button className="zesoundpreview" type="button" onClick={()=>{unlockChatAudio();playNotificationSound(scope==='global'?{...prefs,chats:{}}:prefs,thread,true)}}><Volume2 size={15}/> Testar som</button>
   </div>
-  <small>Preferências salvas neste navegador. Sons e avisos funcionam enquanto o site estiver aberto; alguns navegadores exigem um clique antes de liberar áudio.</small>
+  <small>Preferências por conversa salvas neste aparelho. No Android com push ativado, pop-ups e sons também funcionam em segundo plano; o sistema pode limitar avisos em economia de bateria. No navegador, os sons dependem do site aberto.</small>
  </div>;
 }
