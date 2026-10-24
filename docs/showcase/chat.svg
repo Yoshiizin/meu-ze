@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="620" viewBox="0 0 360 620" role="img" aria-labelledby="t d">
+<title id="t">Meu Zé: conversas retrô</title><desc id="d">Mockup fictício de chat retro. Demonstração ilustrativa com dados fictícios; não é uma captura real.</desc>
+<rect width="360" height="620" rx="24" fill="#e9e5dc"/>
+<rect x="10" y="10" width="340" height="600" rx="18" fill="#f5f2ea" stroke="#211b16" stroke-width="1.3"/>
+<rect x="18" y="18" width="324" height="584" rx="12" fill="#fffdfa" stroke="#d6d1c9"/>
+<rect x="18" y="18" width="324" height="40" rx="11" fill="#fcfaf5"/>
+<rect x="18" y="52" width="324" height="1" fill="#a6a094"/>
+<text x="35" y="45" fill="#1700b7" font-family="Arial,sans-serif" font-style="italic" font-weight="900" font-size="24">meu zé.</text>
+<rect x="276" y="27" width="53" height="22" fill="#f6f3ed" stroke="#b7b0a4"/><text x="302" y="41.5" text-anchor="middle" fill="#4c4b46" font-family="Arial" font-size="9">☰ MENU</text>
+
+<text x="34" y="83" font-family="Georgia" font-size="21" font-weight="bold" fill="#241c1c">Papo de sempre.</text>
+<text x="34" y="102" font-family="Arial" font-size="10" fill="#857d75">CHAT GERAL  /  MENSAGENS</text>
+<rect x="34" y="120" width="292" height="36" fill="#1700b7"/><text x="47" y="142" font-family="Arial" font-size="11" font-weight="bold" fill="#fff">✳  Toda a galera</text><text x="312" y="142" text-anchor="end" font-family="Arial" font-size="11" fill="#fff">⚙</text>
+<rect x="34" y="156" width="292" height="320" fill="#fff9f6" stroke="#c1b6aa"/>
+<g font-family="Arial">
+<rect x="47" y="173" width="225" height="59" fill="#fff" stroke="#b5a8a1" stroke-width="1"/>
+<text x="57" y="188" font-size="10" fill="#6a568d" font-weight="bold">LIA  <tspan fill="#999" font-weight="normal">14:10</tspan></text>
+<text x="57" y="205" font-size="11" fill="#433c3b">vocês lembram daquele fórum</text><text x="57" y="219" font-size="11" fill="#433c3b">que a gente usava? kkkkk</text>
+<rect x="74" y="246" width="239" height="57" fill="#e7defe" stroke="#a49bc1"/>
+<text x="85" y="262" font-size="10" fill="#1700b7" font-weight="bold">VOCÊ  <tspan fill="#777" font-weight="normal">14:12</tspan></text>
+<text x="85" y="278" font-size="11" fill="#282139">esse é literalmente o conceito</text><text x="85" y="291" font-size="11" fill="#282139">do Meu Zé ✳</text>
+<rect x="47" y="317" width="230" height="57" fill="#fff" stroke="#b5a8a1"/>
+<text x="57" y="333" font-size="10" fill="#476486" font-weight="bold">BENTO  <tspan fill="#999" font-weight="normal">14:13</tspan></text>
+<text x="57" y="349" font-size="11" fill="#433c3b">finalmente a internet voltou</text><text x="57" y="363" font-size="11" fill="#433c3b">a ser divertida ♫</text>
+<rect x="76" y="389" width="237" height="46" fill="#e7defe" stroke="#a49bc1"/>
+<text x="88" y="407" font-size="10" fill="#1700b7" font-weight="bold">VOCÊ  <tspan fill="#777" font-weight="normal">14:15</tspan></text>
+<text x="88" y="423" font-size="11" fill="#282139">e com nosso próprio chat!</text>
+</g>
+<rect x="34" y="487" width="241" height="44" fill="white" stroke="#998f83"/><text x="46" y="515" font-family="Georgia" font-size="13" fill="#80746b">Escreva uma mensagem...</text>
+<rect x="278" y="487" width="48" height="44" fill="#1700b7"/><path d="M289 510L313 500L306 519L302 511Z" fill="#fff"/>
+<rect x="20" y="551" width="320" height="49" fill="#fffdfa" stroke="#ddd6cc"/>
+<path d="M21 551H339" stroke="#8e827d" stroke-dasharray="3 4"/>
+<g font-family="Arial,sans-serif" text-anchor="middle" fill="#56514d" font-size="10">
+ <text x="60" y="580">INÍCIO</text><text x="137" y="580">BUSCA</text><text x="218" y="580">CHAT</text><text x="300" y="580">PERFIL</text>
+</g>
+<circle cx="60" cy="563" r="4" fill="#1700b7"/><circle cx="137" cy="563" r="4" fill="#6a685f"/><circle cx="218" cy="563" r="4" fill="#6a685f"/><circle cx="300" cy="563" r="4" fill="#6a685f"/>
+<rect x="80" y="605" width="200" height="13" rx="6" fill="#31234d"/>
+<text x="180" y="614" font-family="Arial,sans-serif" font-size="8" fill="#fff" letter-spacing="1.4" text-anchor="middle">PRÉVIA ILUSTRATIVA</text></svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="620" viewBox="0 0 360 620" role="img" aria-labelledby="t d">
+<title id="t">Meu Zé: feed</title><desc id="d">Interface do feed com postagens demonstrativas. Demonstração ilustrativa com dados fictícios; não é uma captura real.</desc>
+<rect width="360" height="620" rx="24" fill="#e9e5dc"/>
+<rect x="10" y="10" width="340" height="600" rx="18" fill="#f5f2ea" stroke="#211b16" stroke-width="1.3"/>
+<rect x="18" y="18" width="324" height="584" rx="12" fill="#fffdfa" stroke="#d6d1c9"/>
+<rect x="18" y="18" width="324" height="40" rx="11" fill="#fcfaf5"/>
+<rect x="18" y="52" width="324" height="1" fill="#a6a094"/>
+<text x="35" y="45" fill="#1700b7" font-family="Arial,sans-serif" font-style="italic" font-weight="900" font-size="24">meu zé.</text>
+<rect x="276" y="27" width="53" height="22" fill="#f6f3ed" stroke="#b7b0a4"/><text x="302" y="41.5" text-anchor="middle" fill="#4c4b46" font-family="Arial" font-size="9">☰ MENU</text>
+
+<text x="34" y="83" font-family="Georgia,serif" font-size="20" fill="#201b19" font-weight="bold">A internet é nossa.</text>
+<text x="34" y="103" font-family="Arial" font-size="10" fill="#827d75">UM CANTINHO DA GALERA  /  FEED</text>
+<path d="M34 117H326" stroke="#bdb6a9" stroke-dasharray="3 4"/>
+<rect x="34" y="132" width="292" height="52" fill="#fcfaf6" stroke="#bfb6a8" stroke-dasharray="3 3"/>
+<rect x="45" y="141" width="29" height="29" fill="#e1cef2"/><text x="59" y="160" font-family="Georgia" font-size="17" text-anchor="middle" fill="#6950a7">L</text>
+<text x="86" y="158" font-family="Georgia" font-size="13" fill="#766b60">O que aconteceu hoje?</text><text x="308" y="162" text-anchor="middle" font-family="Arial" font-size="20" fill="#1700b7">＋</text>
+<rect x="34" y="197" width="67" height="23" stroke="#1700b7"/><text x="67" y="212" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#1700b7">TODOS</text>
+<rect x="108" y="197" width="73" height="23" stroke="#d8d1c4"/><text x="144" y="212" text-anchor="middle" font-family="Arial" font-size="9" fill="#736b61">MÚSICA</text>
+<rect x="188" y="197" width="75" height="23" stroke="#d8d1c4"/><text x="225" y="212" text-anchor="middle" font-family="Arial" font-size="9" fill="#736b61">CINEMA</text>
+<rect x="34" y="232" width="292" height="177" fill="#ffffff" stroke="#a49d92" stroke-dasharray="4 3"/>
+<rect x="46" y="246" width="26" height="26" fill="#ec8c48"/><text x="59" y="263" text-anchor="middle" font-size="14" fill="#fff" font-family="Arial">L</text>
+<text x="82" y="254" font-family="Arial" font-size="12" font-weight="bold" fill="#2c2a28">Lia</text>
+<text x="82" y="270" font-family="Arial" font-size="9" fill="#82786d">há 15 minutos • papo aleatório</text>
+<text x="46" y="303" font-family="Arial" font-size="21" font-weight="900" fill="#261c18">O LUXO DE NÃO</text><text x="46" y="328" font-family="Arial" font-size="21" font-weight="900" fill="#261c18">FAZER NADA</text>
+<text x="46" y="352" font-family="Georgia" font-size="12" fill="#413b36">Uma tarde, um picolé e zero pressa.</text>
+<text x="46" y="370" font-family="Georgia" font-size="12" fill="#413b36">Quem topa um rolê sem roteiro?</text>
+<path d="M46 382H314" stroke="#d1c9bc" stroke-dasharray="3 4"/>
+<text x="47" y="400" font-family="Arial" font-size="10" fill="#1700b7">♡  12 curtidas</text><text x="240" y="400" font-family="Arial" font-size="10" fill="#736b61">4 respostas</text>
+<rect x="34" y="424" width="292" height="112" fill="#fff" stroke="#a49d92" stroke-dasharray="4 3"/>
+<rect x="46" y="438" width="26" height="26" fill="#416d93"/><text x="59" y="455" text-anchor="middle" font-size="14" fill="#fff" font-family="Arial">B</text>
+<text x="82" y="447" font-family="Arial" font-size="12" font-weight="bold" fill="#2c2a28">Bento</text>
+<text x="82" y="462" font-family="Arial" font-size="9" fill="#82786d">há 1 hora • no repeat</text>
+<text x="46" y="497" font-family="Arial" font-size="18" font-weight="900" fill="#261c18">UM DISCO INTEIRO.</text>
+<text x="46" y="518" font-family="Georgia" font-size="12" fill="#413b36">Domingo com música boa e café.</text>
+<rect x="20" y="551" width="320" height="49" fill="#fffdfa" stroke="#ddd6cc"/>
+<path d="M21 551H339" stroke="#8e827d" stroke-dasharray="3 4"/>
+<g font-family="Arial,sans-serif" text-anchor="middle" fill="#56514d" font-size="10">
+ <text x="60" y="580">INÍCIO</text><text x="137" y="580">BUSCA</text><text x="218" y="580">CHAT</text><text x="300" y="580">PERFIL</text>
+</g>
+<circle cx="60" cy="563" r="4" fill="#1700b7"/><circle cx="137" cy="563" r="4" fill="#6a685f"/><circle cx="218" cy="563" r="4" fill="#6a685f"/><circle cx="300" cy="563" r="4" fill="#6a685f"/>
+<rect x="80" y="605" width="200" height="13" rx="6" fill="#31234d"/>
+<text x="180" y="614" font-family="Arial,sans-serif" font-size="8" fill="#fff" letter-spacing="1.4" text-anchor="middle">PRÉVIA ILUSTRATIVA</text></svg>

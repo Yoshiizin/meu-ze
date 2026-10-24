@@ -6,7 +6,7 @@ O Android usa um aplicativo nativo WebView que abre https://meu-ze.vercel.app/ e
 
 **[⬇️ Baixar Meu-Ze.apk diretamente pelo GitHub](https://github.com/Yoshiizin/meu-ze/releases/latest/download/Meu-Ze.apk)**
 
-Ou acesse a **[página de downloads (Releases)](https://github.com/Yoshiizin/meu-ze/releases)** e escolha `Meu-Ze.apk` em **Assets**. O repositório é privado, então é necessário estar conectado ao GitHub com permissão de acesso.
+Ou acesse a **[página de downloads (Releases)](https://github.com/Yoshiizin/meu-ze/releases)** e escolha `Meu-Ze.apk` em **Assets**. O repositório é público. As Releases podem ser consultadas sem acesso à rede social; para entrar no Meu Zé é necessário ter uma conta autorizada e convite.
 
 1. No Android, baixe o arquivo `.apk` pelo link acima.
 2. Abra o APK e, se o Android solicitar, permita a instalação dessa fonte.

@@ -1,0 +1,22 @@
+# Segredos e configurações locais
+.env
+.env.*
+!.env.example
+!.env.sample
+**/*.jks
+**/*.keystore
+**/google-services.json
+**/service-account*.json
+**/*service-account*key*.json
+*.pem
+*.p12
+
+# Build / dependências
+node_modules/
+.next/
+out/
+dist/
+build/
+.gradle/
+.DS_Store
+*.log

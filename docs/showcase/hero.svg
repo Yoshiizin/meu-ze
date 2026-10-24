@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-labelledby="title description">
+<title id="title">Meu Zé 2.0 — a internet é nossa</title>
+<desc id="description">Banner promocional ilustrativo com visual editorial retrô, dinossauro e cartões de feed, chat e perfil. Não é captura de tela real.</desc>
+<defs>
+<pattern id="dots" width="15" height="15" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#211b55" opacity=".23"/></pattern>
+<filter id="shade" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="8" dy="10" stdDeviation="2" flood-color="#1f184e" flood-opacity=".3"/></filter>
+</defs>
+<rect width="1200" height="430" rx="17" fill="#f6f1e6"/>
+<rect x="14" y="14" width="1172" height="402" rx="6" fill="url(#dots)" stroke="#1700b7" stroke-width="2"/>
+<rect x="30" y="30" width="1140" height="37" fill="#1700b7"/>
+<text x="48" y="54" font-family="Arial,sans-serif" font-weight="bold" font-size="13" letter-spacing="1.5" fill="white">UM LUGAR PRA CHAMAR DE NOSSO  ✳  EDIÇÃO 2.0</text>
+<text x="1144" y="54" text-anchor="end" font-family="monospace" font-size="13" fill="#e3d9ff">WWW.MEU-ZE.VERCEL.APP</text>
+<text x="60" y="187" font-size="108" fill="#1700b7" font-family="Arial,sans-serif" font-style="italic" font-weight="900" letter-spacing="-8">meu zé.</text>
+<path d="M60 202H607" stroke="#1700b7" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="60" y="255" font-size="40" font-family="Georgia,serif" fill="#211835" font-weight="bold">A internet é nossa.</text>
+<text x="63" y="294" font-size="19" font-family="Georgia,serif" fill="#5f565a">Uma rede social feita pra quem sente falta</text>
+<text x="63" y="323" font-size="19" font-family="Georgia,serif" fill="#5f565a">de uma internet com personalidade.</text>
+<rect x="60" y="349" width="185" height="37" fill="#d3ef6c" stroke="#1d2742" stroke-width="2"/>
+<text x="152" y="373" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#231a4d">RETRO • SOCIAL</text>
+<rect x="257" y="349" width="187" height="37" fill="#fffefa" stroke="#1700b7" stroke-width="2"/>
+<text x="350" y="373" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#1700b7">SÓ POR CONVITE</text>
+<g transform="translate(665 85) rotate(-7)" filter="url(#shade)">
+<rect width="266" height="290" rx="8" fill="#ffffff" stroke="#26184c" stroke-width="3"/>
+<rect x="0" y="0" width="266" height="35" rx="7" fill="#1700b7"/>
+<text x="16" y="24" font-size="19" font-weight="900" font-style="italic" font-family="Arial" fill="white">meu zé.</text>
+<text x="251" y="23" text-anchor="end" font-size="11" font-family="monospace" fill="white">FEED / 01</text>
+<text x="15" y="62" font-family="Georgia" font-size="16" font-weight="bold" fill="#262039">O que tá rolando?</text>
+<path d="M14 73H252" stroke="#aa9c9c" stroke-dasharray="4 4"/>
+<rect x="15" y="91" width="236" height="153" fill="#fffaf3" stroke="#b5aab1" stroke-dasharray="4 3"/>
+<rect x="25" y="102" width="27" height="27" fill="#efad67"/>
+<text x="38" y="121" text-anchor="middle" font-family="Arial" font-size="16" fill="#532a29">L</text>
+<text x="63" y="114" font-family="Arial" font-size="11" font-weight="bold" fill="#241f28">LIA</text>
+<text x="63" y="128" font-family="Arial" font-size="9" fill="#93878a">papo aleatório • agora</text>
+<text x="25" y="158" font-family="Arial" font-size="22" font-weight="900" fill="#281d28">VIVA O BLOG</text>
+<text x="25" y="182" font-family="Arial" font-size="22" font-weight="900" fill="#281d28">DE AMIGOS!</text>
+<text x="25" y="207" font-family="Georgia" font-size="12" fill="#4e4647">Hoje tem conversa até tarde.</text>
+<path d="M25 220H241" stroke="#c9bebb" stroke-dasharray="4 4"/>
+<text x="25" y="235" font-family="Arial" font-size="11" fill="#1700b7">♡  12   ◌  3</text>
+<rect x="15" y="254" width="236" height="22" fill="#e7e1ff"/>
+<text x="133" y="269" text-anchor="middle" font-family="Arial" font-size="10" fill="#1700b7">▲ ATUALIZAÇÕES DA GALERA ▲</text>
+</g>
+<g transform="translate(939 121) rotate(9)" filter="url(#shade)">
+<rect width="210" height="239" fill="#fffdf9" stroke="#1700b7" stroke-width="3"/>
+<rect width="210" height="33" fill="#d7ebff"/>
+<text x="14" y="23" font-family="Arial" font-size="15" font-weight="bold" fill="#24466a">MEU PERFIL ✷</text>
+<rect x="12" y="48" width="186" height="54" fill="#9ecaff"/>
+<path d="M13 100L55 66L104 91L143 60L197 97Z" fill="#5794bf"/>
+<rect x="19" y="83" width="48" height="48" fill="#fff4da" stroke="#fff" stroke-width="5"/>
+<text x="43" y="116" text-anchor="middle" font-family="Georgia" font-size="30" fill="#6c6a62">N</text>
+<text x="79" y="118" font-size="20" font-family="Arial" font-weight="900" fill="#24466a">NINA</text>
+<text x="13" y="153" font-size="12" font-family="Georgia" fill="#3c4553">meu cantinho.</text>
+<path d="M13 166H197" stroke="#999" stroke-dasharray="3 4"/>
+<text x="13" y="185" font-size="10" font-family="Arial" fill="#24466a" font-weight="bold">♫ MINHA TRILHA</text>
+<rect x="13" y="193" width="185" height="31" fill="#e2f0ff"/>
+<text x="24" y="215" font-size="14" font-family="Arial" fill="#24466a">▶  ━━━━━  ♫</text>
+</g>
+<g transform="translate(1103 71) rotate(16)" filter="url(#shade)">
+<path d="M0 21H13V9H28V0H61V6H67V18H79V32H62V43H56V55H45V43H26V55H16V41H3Z" fill="#b1db58" stroke="#202243" stroke-width="4" stroke-linejoin="round"/>
+<rect x="46" y="9" width="7" height="7" fill="#1a2442"/>
+<path d="M70 26H80" stroke="#1a2442" stroke-width="3"/>
+<rect x="2" y="27" width="19" height="7" fill="#b1db58" stroke="#202243" stroke-width="3"/>
+</g>
+<text x="1145" y="397" text-anchor="end" font-family="monospace" font-size="11" fill="#81768d">CONCEITO VISUAL • PERSONAGENS FICTÍCIOS</text>
+</svg>
