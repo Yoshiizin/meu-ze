@@ -56,7 +56,7 @@ export default function ChatSoundSettings({prefs,thread,chatName,initialScope='c
   <label className="zesoundfield">Som
    <select value={scope==='global'?prefs.tone:selected} onChange={e=>changeTone(e.target.value as NotificationTone|ConversationTone)}>
     {scope==='chat'&&<option value="default">Usar som geral</option>}
-    <option value="fears">Fears to Fathom</option><option value="retro">Retrô eletrônico</option><option value="custom">Meu áudio</option><option value="off">Sem som</option>
+    <option value="retro">Retrô eletrônico (original)</option><option value="custom">Meu áudio</option><option value="off">Sem som</option>
    </select>
   </label>
   <label className="zesoundfield">Volume · {prefs.volume}%

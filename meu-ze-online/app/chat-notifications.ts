@@ -1,7 +1,7 @@
 'use client';
 import {playChatCue,unlockChatAudio} from './chat-sounds';
 
-export type NotificationTone='fears'|'retro'|'custom'|'off';
+export type NotificationTone='retro'|'custom'|'off';
 export type ConversationTone='default'|NotificationTone;
 export type ConversationSound={tone:ConversationTone;customUrl?:string};
 export type NotificationPreferences={
@@ -15,7 +15,7 @@ export type NotificationPreferences={
 };
 
 export const defaultNotificationPreferences:NotificationPreferences={
-  enabled:true,desktop:false,pushEnabled:false,tone:'fears',volume:80,customUrl:'',chats:{}
+  enabled:true,desktop:false,pushEnabled:false,tone:'retro',volume:80,customUrl:'',chats:{}
 };
 const storageKey=(user:string)=>'meuze-notifications-v1-'+user;
 const safeAudioUrl=(value:unknown):string=>typeof value==='string'&&/^https:\/\/[^\s<>"']{1,1900}$/.test(value)?value:'';
@@ -26,20 +26,20 @@ export function readNotificationPreferences(user:string):NotificationPreferences
     const raw=window.localStorage.getItem(storageKey(user));
     if(!raw)return {...defaultNotificationPreferences,chats:{}};
     const parsed=JSON.parse(raw);
-    const tones=['fears','retro','custom','off'];
+    const tones=['retro','custom','off'];
     const chats:Record<string,ConversationSound>={};
     if(parsed.chats&&typeof parsed.chats==='object'){
       for(const [id,item] of Object.entries(parsed.chats)){
         if(id!=='general'&&!/^[0-9a-f-]{36}$/i.test(id))continue;
         const value=item as Record<string,unknown>;
-        chats[id]={tone:typeof value?.tone==='string'&&['default',...tones].includes(value.tone)?value.tone as ConversationTone:'default',customUrl:safeAudioUrl(value?.customUrl)};
+        chats[id]={tone:value?.tone==='fears'?'retro':typeof value?.tone==='string'&&['default',...tones].includes(value.tone)?value.tone as ConversationTone:'default',customUrl:safeAudioUrl(value?.customUrl)};
       }
     }
     return {
       enabled:parsed.enabled!==false,
       desktop:parsed.desktop===true,
       pushEnabled:parsed.pushEnabled===true,
-      tone:tones.includes(parsed.tone)?parsed.tone:'fears',
+      tone:parsed.tone==='fears'?'retro':tones.includes(parsed.tone)?parsed.tone:'retro',
       volume:Number.isFinite(parsed.volume)?Math.max(0,Math.min(100,parsed.volume)):80,
       customUrl:safeAudioUrl(parsed.customUrl),
       chats
@@ -73,7 +73,8 @@ export function playNotificationSound(prefs:NotificationPreferences,thread:strin
     playChatCue('received',volume);
     return;
   }
-  const src=tone==='fears'?'/sounds/fears-to-fathom-notification.mp3':safeAudioUrl(url);
+  // Custom audio is user-supplied; built-in audio is synthesized locally.
+  const src=tone==='custom'?safeAudioUrl(url):'';
   if(!src||typeof window==='undefined')return;
   try{
     const audio=new Audio(src);

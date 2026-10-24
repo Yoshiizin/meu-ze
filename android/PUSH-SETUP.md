@@ -1,6 +1,6 @@
 # 🦕 Ativar notificações Android em segundo plano (FCM)
 
-A versão Android 1.1 tem suporte a pop-ups nativos para mensagens individuais e grupo geral. O som respeita **Geral / Esta conversa**: Fears to Fathom, retrô, áudio MP3/M4A/OGG próprio ou sem som. Para funcionar com o app em segundo plano, é necessário configurar Firebase + servidor; o APK 1.0 antigo **não** tem receptor nativo de push.
+A versão Android 1.1 tem suporte a pop-ups nativos para mensagens individuais e grupo geral. O som respeita **Geral / Esta conversa**: tom retrô sintetizado pelo próprio aplicativo, áudio MP3/M4A/OGG escolhido pelo usuário ou sem som. Para funcionar com o app em segundo plano, é necessário configurar Firebase + servidor; o APK 1.0 antigo **não** tem receptor nativo de push.
 
 ## 1. Firebase (projeto gratuito)
 

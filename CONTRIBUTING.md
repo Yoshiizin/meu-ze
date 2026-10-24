@@ -16,4 +16,4 @@ Nunca publique `.env`, `.env.local`, chaves de serviço, tokens FCM, certificado
 
 ## Licença
 
-O repositório é visível publicamente, mas isso não é automaticamente uma licença de uso, cópia ou redistribuição. Verifique a licença explicitamente indicada pelo mantenedor antes de reutilizar partes do código.
+As partes originais deste projeto estão sob [MIT](./LICENSE). Preserve os avisos de licença; consulte [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) antes de redistribuir áudio, imagens, dependências ou conteúdo de membros. A licença não transfere direitos sobre materiais de terceiros.

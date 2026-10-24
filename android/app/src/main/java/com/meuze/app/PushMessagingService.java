@@ -63,7 +63,7 @@ public final class PushMessagingService extends FirebaseMessagingService {
         JSONObject chats=prefs.optJSONObject("chats");
         JSONObject chat=chats==null?null:chats.optJSONObject(thread);
         String override=chat==null?"default":chat.optString("tone","default");
-        String tone="default".equals(override)?prefs.optString("tone","fears"):override;
+        String tone="default".equals(override)?prefs.optString("tone","retro"):override;
         if("off".equals(tone))return; // Conversation muted: suppress the entire popup.
         int volume=Math.max(0,Math.min(100,prefs.optInt("volume",80)));
         showNotification(title,body,thread,data.get("messageId"));
@@ -95,7 +95,7 @@ public final class PushMessagingService extends FirebaseMessagingService {
     }
 
     private void playSound(String tone,JSONObject chat,JSONObject prefs,int volume){
-        if("retro".equals(tone)){
+        if("retro".equals(tone)||"fears".equals(tone)){
             try{
                 ToneGenerator beep=new ToneGenerator(AudioManager.STREAM_NOTIFICATION,volume);
                 beep.startTone(ToneGenerator.TONE_PROP_BEEP2,230);
@@ -120,12 +120,12 @@ public final class PushMessagingService extends FirebaseMessagingService {
                 }catch(Exception ignored){}
             }
         }
+        // Fallback for invalid custom files uses Android's native synthesized tone.
+        // No third-party game audio is bundled or played.
         try{
-            MediaPlayer player=MediaPlayer.create(this,R.raw.fears_to_fathom_notification);
-            if(player==null)return;
-            player.setVolume(volume/100f,volume/100f);
-            player.setOnCompletionListener(MediaPlayer::release);
-            player.start();
+            ToneGenerator beep=new ToneGenerator(AudioManager.STREAM_NOTIFICATION,volume);
+            beep.startTone(ToneGenerator.TONE_PROP_BEEP2,230);
+            new Handler(Looper.getMainLooper()).postDelayed(beep::release,400);
         }catch(Exception ignored){}
     }
 

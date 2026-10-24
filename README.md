@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://meu-ze.vercel.app/"><img alt="Abrir Meu Zé" src="https://img.shields.io/badge/🌐_ABRIR-MEU_ZÉ-1700b7?style=for-the-badge" /></a>
-  <a href="https://github.com/Yoshiizin/meu-ze/releases/download/android-v2.0.0/Meu-Ze.apk"><img alt="Baixar Android" src="https://img.shields.io/badge/⬇_ANDROID-APK_2.0-d7ed73?style=for-the-badge&amp;labelColor=272142" /></a>
+  <a href="https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml"><img alt="Baixar Android" src="https://img.shields.io/badge/⬇_ANDROID-APK_2.0-d7ed73?style=for-the-badge&amp;labelColor=272142" /></a>
 </p>
 
 <p align="center">
@@ -96,8 +96,8 @@ A interface mistura **tipografia marcante, detalhes retrô, divisórias pontilha
   </tr>
   <tr>
     <td>
-      <a href="https://github.com/Yoshiizin/meu-ze/releases/download/android-v2.0.0/Meu-Ze.apk"><strong>⬇ Baixar Meu-Ze.apk 2.0</strong></a><br/>
-      <sub>Android 10+ · APK de teste</sub>
+      <a href="https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml"><strong>⬇ Baixar Meu-Ze.apk 2.0</strong></a><br/>
+      <sub>Android 10+ · APK em Artifacts</sub>
     </td>
     <td>
       Abra <a href="https://meu-ze.vercel.app/">meu-ze.vercel.app</a> no Safari e toque em <strong>Compartilhar → Adicionar à Tela de Início</strong>.
@@ -109,7 +109,7 @@ A interface mistura **tipografia marcante, detalhes retrô, divisórias pontilha
   </tr>
 </table>
 
-**Android:** baixe o APK na [Release Android 2.0](https://github.com/Yoshiizin/meu-ze/releases/tag/android-v2.0.0), autorize a instalação pelo sistema quando solicitado e entre com sua conta. Para alertas em segundo plano, permita notificações no Android e ajuste suas preferências no chat. A versão publicada foi assinada para testes; atualizações com outro certificado podem exigir reinstalação.
+**Android:** baixe o ZIP do APK no [build mais recente do GitHub Actions](https://github.com/Yoshiizin/meu-ze/actions/workflows/android-apk.yml), extraia o arquivo APK, autorize a instalação pelo sistema quando solicitado e entre com sua conta. Para alertas em segundo plano, permita notificações no Android e ajuste suas preferências no chat. A versão publicada foi assinada para testes; atualizações com outro certificado podem exigir reinstalação.
 
 > ⚠️ O aplicativo Android é uma WebView que abre o site do Meu Zé e precisa de internet para feed e mensagens. A versão iOS é um PWA pelo Safari, não um aplicativo nativo da App Store.
 
@@ -146,6 +146,12 @@ A aplicação requer **Node.js 22.13+** e configuração válida do Supabase. Co
 O repositório apresenta apenas o código. **Não copie segredos para ele.** Credenciais administrativas, tokens de serviço do Firebase, chaves `SUPABASE_SERVICE_ROLE_KEY`, arquivos `.env.local`, senhas e convites reais não devem ser enviados ao GitHub.
 
 Os valores públicos de configuração de cliente, como `NEXT_PUBLIC_SUPABASE_URL` e a chave **anon/public** do Supabase, **não** substituem validações e políticas RLS. Mídias em armazenamento público podem ser acessadas por quem recebe o endereço do arquivo. Mantenha políticas de acesso e regras do backend revisadas antes de convidar mais pessoas.
+
+### ⚖️ Licença e direitos
+
+As partes originais deste projeto são disponibilizadas sob a **[Licença MIT](./LICENSE)**, que permite reutilização, modificação e distribuição, inclusive comercial, com preservação do aviso de copyright. Bibliotecas externas continuam sujeitas às próprias licenças. A MIT não autoriza reutilizar mensagens, músicas, fotos ou outros conteúdos dos membros, nem concede direitos sobre marcas. Consulte os [avisos de terceiros e mídia](./THIRD_PARTY_NOTICES.md).
+
+**Nota sobre downloads antigos:** uma release Android 2.0 anterior foi gerada antes da revisão de direitos dos áudios. Os links principais agora direcionam à compilação atualizada; releases anteriores precisam de revisão antes de redistribuição.
 
 ### 🧩 Contribua
 
